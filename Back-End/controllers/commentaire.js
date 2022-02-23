@@ -6,7 +6,7 @@ const fs = require("fs");
 // Ici la logique pour chaque fonction
 
 // Pour la création d'objet
-exports.createcommentaire = (req, res, next) => {
+exports.createCommentaire = (req, res, next) => {
   // chaine de caractére sous forme javascript req.body.commentaire
   const commentaireObject = JSON.parse(req.body.commentaire);
   // ont enléve l'id car mongoDB en génére un de lui même
@@ -27,7 +27,7 @@ exports.createcommentaire = (req, res, next) => {
 };
 
 // modifier un objet existant dans la base de donnée
-exports.modifycommentaire = (req, res, next) => {
+exports.modifyCommentaire = (req, res, next) => {
   // permet de savoir si image existante ou si nouvelle
   const commentaireObject = req.file
     ? {
@@ -48,7 +48,7 @@ exports.modifycommentaire = (req, res, next) => {
 };
 
 // supprimer un objet existant dans la base de donnée
-exports.deletecommentaire = (req, res, next) => {
+exports.deleteCommentaire = (req, res, next) => {
   //ont trouve l'objet dans la base de donnée
   commentaire
     .findOne({ _id: req.params.id })
@@ -68,7 +68,7 @@ exports.deletecommentaire = (req, res, next) => {
 };
 
 // :id <= parti de la route dynamique pour une recherche à l'unité dans la base de donnée
-exports.getOnecommentaire = (req, res, next) => {
+exports.getOneCommentaire = (req, res, next) => {
   // findOne pour trouver qu'un seul objet
   commentaire
     .findOne({ _id: req.params.id })
@@ -76,7 +76,7 @@ exports.getOnecommentaire = (req, res, next) => {
     .catch((error) => res.status(500).json({ error }));
 };
 
-exports.getAllcommentaire = (req, res, next) => {
+exports.getAllCommentaire = (req, res, next) => {
   // find pour trouver tous les objets
   commentaire
     .find()
@@ -86,7 +86,7 @@ exports.getAllcommentaire = (req, res, next) => {
 };
 
 //Incrémentation des likes et dislikes utilisateur pour les commentaires
-exports.likeDislikecommentaire = (req, res, next) => {
+exports.likeDislikeCommentaire = (req, res, next) => {
   if (req.body.like === undefined || req.body.userId === undefined) {
     return res.status(400).json({ message: "Bad request !" });
   }
