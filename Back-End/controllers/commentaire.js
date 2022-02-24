@@ -19,7 +19,7 @@ exports.createCommentaire = (req, res, next) => {
       req.file.filename
     }`,
   });
-  // save dans la base de donnée MongoDB
+  // save dans la base de donnée
   commentaire
     .save()
     .then(() => res.status(201).json({ message: "Objet enregistré !" }))
@@ -110,7 +110,7 @@ exports.likeDislikeCommentaire = (req, res, next) => {
               )
               .then(() => {
                 res.status(201).json({
-                  message: `Le vote pour la commentaire: ${commentaire.name} n'est plus pris en compte`,
+                  message: `Le vote pour le commentaire: ${commentaire.name} n'est plus pris en compte`,
                 });
               })
               .catch((error) => res.status(400).json({ error }));
@@ -124,7 +124,7 @@ exports.likeDislikeCommentaire = (req, res, next) => {
               )
               .then(() => {
                 res.status(201).json({
-                  message: `Le vote pour la commentaire: ${commentaire.name} n'est plus pris en compte`,
+                  message: `Le vote pour le commentaire: ${commentaire.name} n'est plus pris en compte`,
                 });
               })
               .catch((error) => res.status(400).json({ error }));
@@ -143,7 +143,7 @@ exports.likeDislikeCommentaire = (req, res, next) => {
           { $inc: { likes: 1 }, $push: { usersLiked: userId } }
         )
         .then(() =>
-          res.status(201).json({ message: `Vous aimez cette commentaire !` })
+          res.status(201).json({ message: `Vous aimez ce commentaire !` })
         )
         .catch((error) => res.status(500).json({ error }));
       break;
@@ -156,9 +156,7 @@ exports.likeDislikeCommentaire = (req, res, next) => {
           { $inc: { dislikes: 1 }, $push: { usersDisliked: userId } }
         )
         .then(() =>
-          res
-            .status(201)
-            .json({ message: `Vous n'aimez pas cette commentaire !` })
+          res.status(201).json({ message: `Vous n'aimez pas ce commentaire !` })
         )
         .catch((error) => res.status(500).json({ error }));
       break;

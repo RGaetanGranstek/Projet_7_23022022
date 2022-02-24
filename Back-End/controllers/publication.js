@@ -19,7 +19,7 @@ exports.createPublication = (req, res, next) => {
       req.file.filename
     }`,
   });
-  // save dans la base de donnée MongoDB
+  // save dans la base de donnée
   publication
     .save()
     .then(() => res.status(201).json({ message: "Objet enregistré !" }))
