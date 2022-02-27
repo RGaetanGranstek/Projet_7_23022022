@@ -9,8 +9,6 @@ const fs = require("fs");
 exports.createPublication = (req, res, next) => {
   // chaine de caractére sous forme javascript req.body.publication
   const publicationObject = JSON.parse(req.body.publication);
-  // ont enléve l'id car mongoDB en génére un de lui même
-  delete publicationObject._id;
   const publication = new publication({
     // permet de récupérer tous les champs du corp de la requête
     ...publicationObject,

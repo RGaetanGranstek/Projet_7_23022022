@@ -9,8 +9,6 @@ const fs = require("fs");
 exports.createCommentaire = (req, res, next) => {
   // chaine de caractére sous forme javascript req.body.commentaire
   const commentaireObject = JSON.parse(req.body.commentaire);
-  // ont enléve l'id car mongoDB en génére un de lui même
-  delete commentaireObject._id;
   const commentaire = new commentaire({
     // permet de récupérer tous les champs du corp de la requête
     ...commentaireObject,
