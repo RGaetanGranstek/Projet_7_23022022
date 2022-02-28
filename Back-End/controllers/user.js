@@ -43,13 +43,14 @@ const emailMask2Options = {
 exports.signup = (req, res, next) => {
   // hash (fonction asynchrome qui prend du temps) pour crypter
   // salt = 10, tour pour l'algorithme de hashage, suffisant pour un mot de passe
+  console.log(req.body.mot_de_passe);
   bcrypt
-    .hash(req.body.password, 10)
+    .hash(req.body.mot_de_passe, 10)
     .then((hash) => {
       // création d'un nouvel utilisateur avec le mot de passe crypté et email
       const user = new User({
         email: MaskData.maskEmail2(req.body.email, emailMask2Options),
-        password: hash,
+        mot_de_passe: hash,
       });
       //enregistrement de l'utilisateur dans la base de donnée
       user
@@ -57,7 +58,7 @@ exports.signup = (req, res, next) => {
         .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
         .catch((error) => res.status(400).json({ error }));
     })
-    .catch((error) => res.status(500).json({ error }));
+    .catch((error) => res.status(532).json({ error }));
 };
 
 //fonction login pour connecter les utilisateurs existants
@@ -71,7 +72,7 @@ exports.login = (req, res, next) => {
       if (!user) {
         return res.status(401).json({ error: "Utilisateur non trouvé !" });
       }
-      if (!schema.validate(req.body.password)) {
+      if (!schema.validate(req.body.mot_de_passe)) {
         //Renvoie une erreur si le schema de mot de passe n'est pas respecté
         return res.status(400).json({
           message:
@@ -80,7 +81,7 @@ exports.login = (req, res, next) => {
       }
       // ont compare le mot de passe entré avec le hash enregistré dans la base de donnée
       bcrypt
-        .compare(req.body.password, user.password)
+        .compare(req.body.mot_de_passe, user.mot_de_passe)
         .then((valid) => {
           // si la comparaison n'est pas bonne on renvoi une erreur
           if (!valid) {

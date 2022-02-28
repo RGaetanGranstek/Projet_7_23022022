@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
   commentaire.init(
     {
       id: {
-        type: Sequelize.INTEGER,
+        type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,

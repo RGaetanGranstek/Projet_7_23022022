@@ -3,8 +3,8 @@ const { sequelize } = require("../config/sequelize.js");
 
 // Model pour l'utilisateur
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {}
-  User.init(
+  class utilisateur extends Model {}
+  utilisateur.init(
     {
       nom: {
         type: DataTypes.STRING,
@@ -29,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       image: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       administrateur: {
         type: DataTypes.BOOLEAN,
@@ -39,8 +38,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "User",
+      modelName: "utilisateur",
     }
   );
-  return User;
+  return utilisateur;
 };
