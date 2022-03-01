@@ -1,5 +1,5 @@
 // model user
-const User = require("../models/User");
+const User = require("../models/user");
 // package cryptage des mots de passe (hashage)
 const bcrypt = require("bcrypt");
 // création de token et permet aussi de les vérifier
@@ -41,47 +41,51 @@ const emailMask2Options = {
 
 // middleware signup pour l'enregistrement des new utilisateur en cryptant le mot de passe
 exports.signup = (req, res, next) => {
+  if (!schema.validate(req.body.password)) {
+    //Renvoie une erreur si le schema de mot de passe n'est pas respecté
+    return res.status(400).json({
+      message:
+        "Le mot de passe doit contenir au moins 10 caractères, une majuscule, une minuscule, 2 chiffres, un symbole ainsi qu'aucun espace.",
+    });
+  }
   // hash (fonction asynchrome qui prend du temps) pour crypter
   // salt = 10, tour pour l'algorithme de hashage, suffisant pour un mot de passe
-  console.log(req.body.mot_de_passe);
   bcrypt
-    .hash(req.body.mot_de_passe, 10)
+    .hash(req.body.password, 10)
     .then((hash) => {
       // création d'un nouvel utilisateur avec le mot de passe crypté et email
-      const user = new User({
+      const user = {
+        nom: req.body.nom,
+        prenom: req.body.prenom,
+        pseudo: req.body.pseudo,
         email: MaskData.maskEmail2(req.body.email, emailMask2Options),
-        mot_de_passe: hash,
-      });
-      //enregistrement de l'utilisateur dans la base de donnée
-      user
-        .save()
-        .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
-        .catch((error) => res.status(400).json({ error }));
+        password: hash,
+      };
+      // console.log(user);
+      // Save Tutorial in the database
+      User.create(user).then(() =>
+        res.status(201).json({ message: "Utilisateur créé !" })
+      );
     })
-    .catch((error) => res.status(532).json({ error }));
+    .catch((error) => res.status(502).json({ error }));
 };
 
 //fonction login pour connecter les utilisateurs existants
 exports.login = (req, res, next) => {
   // ont récupère l'utilisateur dans la base de donnée qui correspond à l'adresse email entrée par l'utilisateur
   User.findOne({
-    email: MaskData.maskEmail2(req.body.email, emailMask2Options),
+    where: {
+      email: MaskData.maskEmail2(req.body.email, emailMask2Options),
+    },
   })
     .then((user) => {
       // si ont ne trouve pas de correspondance ont renvoi une erreur
       if (!user) {
         return res.status(401).json({ error: "Utilisateur non trouvé !" });
       }
-      if (!schema.validate(req.body.mot_de_passe)) {
-        //Renvoie une erreur si le schema de mot de passe n'est pas respecté
-        return res.status(400).json({
-          message:
-            "Le mot de passe doit contenir au moins 10 caractères, une majuscule, une minuscule, 2 chiffres, un symbole ainsi qu'aucun espace.",
-        });
-      }
       // ont compare le mot de passe entré avec le hash enregistré dans la base de donnée
       bcrypt
-        .compare(req.body.mot_de_passe, user.mot_de_passe)
+        .compare(req.body.password, user.password)
         .then((valid) => {
           // si la comparaison n'est pas bonne on renvoi une erreur
           if (!valid) {
