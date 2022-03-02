@@ -1,5 +1,5 @@
-// importation du modele
-const publication = require("../models/publication");
+// importation du model
+const Publication = require("../models/publication");
 // importation de fs de node pour file system pour avoir accés aux différentes opérations du système de fichier
 const fs = require("fs");
 
@@ -7,40 +7,25 @@ const fs = require("fs");
 
 // Pour la création d'objet
 exports.createPublication = (req, res, next) => {
-  // chaine de caractére sous forme javascript req.body.publication
-  const publicationObject = JSON.parse(req.body.publication);
-  const publication = new publication({
-    // permet de récupérer tous les champs du corp de la requête
-    ...publicationObject,
-    // ont génére une URL de l'image
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`,
-  });
+  const publication = {
+    utilisateur_id: req.body.utilisateur_id,
+    titre: req.body.titre,
+    message: req.body.message,
+    image: req.body.image,
+    // image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+  };
   // save dans la base de donnée
-  publication
-    .save()
-    .then(() => res.status(201).json({ message: "Objet enregistré !" }))
+  Publication.create(publication)
+    .then(() => res.status(201).json({ message: "Publication créé !" }))
     .catch((error) => res.status(400).json({ error }));
 };
 
 // modifier un objet existant dans la base de donnée
 exports.modifyPublication = (req, res, next) => {
-  // permet de savoir si image existante ou si nouvelle
-  const publicationObject = req.file
-    ? {
-        ...JSON.parse(req.body.publication),
-        // ont génére une URL de l'image
-        imageUrl: `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
-        }`,
-      }
-    : { ...req.body }; // si il n'existe pas on fait une copie de req.body
-  publication
-    .updateOne(
-      { _id: req.params.id },
-      { ...publicationObject, _id: req.params.id }
-    )
+  const _id = req.params.id;
+  Publication.update(req.body, {
+    where: { id: _id },
+  })
     .then(() => res.status(200).json({ message: "Objet modifié !" }))
     .catch((error) => res.status(400).json({ error }));
 };
@@ -48,16 +33,19 @@ exports.modifyPublication = (req, res, next) => {
 // supprimer un objet existant dans la base de donnée
 exports.deletePublication = (req, res, next) => {
   //ont trouve l'objet dans la base de donnée
-  publication
-    .findOne({ _id: req.params.id })
+  const _id = req.params.id;
+  Publication.findByPk(_id)
     .then((publication) => {
       // ont récupère le nom du fichier à supprimer
-      const filename = publication.imageUrl.split("/images/")[1];
+      const filename = publication.image.split("/images/")[1];
       // ont supprime l'objet
+      // console.log(_id);
+      // console.log(filename);
       fs.unlink(`images/${filename}`, () => {
-        // ont renvoi une réponse si fonctionne ou non
-        publication
-          .deleteOne({ _id: req.params.id })
+        //     // ont renvoi une réponse si fonctionne ou non
+        Publication.destroy({
+          where: { id: _id },
+        })
           .then(() => res.status(200).json({ message: "Objet supprimé !" }))
           .catch((error) => res.status(400).json({ error }));
       });
@@ -67,65 +55,76 @@ exports.deletePublication = (req, res, next) => {
 
 // :id <= parti de la route dynamique pour une recherche à l'unité dans la base de donnée
 exports.getOnePublication = (req, res, next) => {
-  // findOne pour trouver qu'un seul objet
-  publication
-    .findOne({ _id: req.params.id })
+  const _id = req.params.id;
+  // findByPk pour trouver qu'un seul objet
+  Publication.findByPk(_id)
     .then((publication) => res.status(200).json(publication))
     .catch((error) => res.status(500).json({ error }));
 };
 
 exports.getAllPublication = (req, res, next) => {
-  // find pour trouver tous les objets
-  publication
-    .find()
+  const _id = req.params.id;
+  // findByPk pour trouver qu'un seul objet
+  Publication.findAll(_id)
     // récupération du tableau de tous les publications, et ont renvoi le tableau reçu par le Back-End (base de donnée)
     .then((publications) => res.status(200).json(publications))
     .catch((error) => res.status(500).json({ error }));
 };
 
+//
+//
+//
 //Incrémentation des likes et dislikes utilisateur pour les publications
 exports.likeDislikePublication = (req, res, next) => {
-  if (req.body.like === undefined || req.body.userId === undefined) {
-    return res.status(400).json({ message: "Bad request !" });
+  if (req.body.like === undefined || req.body.utilisateur_id === undefined) {
+    return res.status(401).json({ message: "Bad request !" });
   }
-  const id = req.params.id;
+  const _id = req.params.id;
   const like = req.body.like;
-  const userId = req.body.userId;
+  const utilisateur_id = req.body.utilisateur_id;
   console.log(req.body);
+  console.log(like);
 
   switch (like) {
     // Décrémentation d'un like et d'un utilisateur
     case 0:
-      publication
-        .findOne({ _id: id })
+      // findByPk pour trouver qu'un seul objet
+      Publication.findByPk(_id)
         .then((publication) => {
-          if (publication.usersLiked.includes(userId)) {
-            publication
-              .updateOne(
-                { _id: id },
-                // Décrémentation d'un like et d'un utilisateur
-                { $inc: { likes: -1 }, $pull: { usersLiked: userId } }
-              )
+          if (publication.usersLiked.includes(utilisateur_id)) {
+            Publication.update(
+              req.body,
+              {
+                where: { id: _id },
+              },
+              // Décrémentation d'un like et d'un utilisateur
+              { $inc: { likes: -1 }, $pull: { usersLiked: utilisateur_id } }
+            )
               .then(() => {
                 res.status(201).json({
-                  message: `Le vote pour la publication: ${publication.name} n'est plus pris en compte`,
+                  message: `Le vote pour la publication: ${publication.titre} n'est plus pris en compte`,
                 });
               })
-              .catch((error) => res.status(400).json({ error }));
+              .catch((error) => res.status(402).json({ error }));
           }
-          if (publication.usersDisliked.includes(userId)) {
-            publication
-              .updateOne(
-                { _id: id },
-                // Décrémentation d'un like et d'un utilisateur
-                { $inc: { dislikes: -1 }, $pull: { usersDisliked: userId } }
-              )
+          if (publication.usersDisliked.includes(utilisateur_id)) {
+            Publication.update(
+              req.body,
+              {
+                where: { id: _id },
+              },
+              // Décrémentation d'un like et d'un utilisateur
+              {
+                $inc: { dislikes: -1 },
+                $pull: { usersDisliked: utilisateur_id },
+              }
+            )
               .then(() => {
                 res.status(201).json({
-                  message: `Le vote pour la publication: ${publication.name} n'est plus pris en compte`,
+                  message: `Le vote pour la publication: ${publication.titre} n'est plus pris en compte`,
                 });
               })
-              .catch((error) => res.status(400).json({ error }));
+              .catch((error) => res.status(403).json({ error }));
           }
         })
         .catch((error) => {
@@ -134,12 +133,14 @@ exports.likeDislikePublication = (req, res, next) => {
       break;
     // L'utilisateur aime la publication
     case 1:
-      publication
-        .updateOne(
-          { _id: id },
-          // Incrémentation d'un like et d'un utilisateur
-          { $inc: { likes: 1 }, $push: { usersLiked: userId } }
-        )
+      Publication.update(
+        req.body,
+        {
+          where: { id: _id },
+        },
+        // Incrémentation d'un like et d'un utilisateur
+        { $inc: { likes: 1 }, $push: { usersLiked: utilisateur_id } }
+      )
         .then(() =>
           res.status(201).json({ message: `Vous aimez cette publication !` })
         )
@@ -147,12 +148,14 @@ exports.likeDislikePublication = (req, res, next) => {
       break;
     // L'utilisateur n'aime pas la publication
     case -1:
-      publication
-        .updateOne(
-          { _id: id },
-          // Incrémentation d'un like et d'un utilisateur
-          { $inc: { dislikes: 1 }, $push: { usersDisliked: userId } }
-        )
+      Publication.update(
+        req.body,
+        {
+          where: { id: _id },
+        },
+        // Incrémentation d'un like et d'un utilisateur
+        { $inc: { dislikes: 1 }, $push: { usersDisliked: utilisateur_id } }
+      )
         .then(() =>
           res
             .status(201)

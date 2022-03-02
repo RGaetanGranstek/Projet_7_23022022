@@ -1,5 +1,5 @@
-// importation du modele
-const commentaire = require("../models/commentaire");
+// importation du model
+const Commentaire = require("../models/commentaire");
 // importation de fs de node pour file system pour avoir accés aux différentes opérations du système de fichier
 const fs = require("fs");
 
@@ -7,40 +7,25 @@ const fs = require("fs");
 
 // Pour la création d'objet
 exports.createCommentaire = (req, res, next) => {
-  // chaine de caractére sous forme javascript req.body.commentaire
-  const commentaireObject = JSON.parse(req.body.commentaire);
-  const commentaire = new commentaire({
-    // permet de récupérer tous les champs du corp de la requête
-    ...commentaireObject,
-    // ont génére une URL de l'image
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`,
-  });
+  const commentaire = {
+    message: req.body.message,
+    utilisateur_id: req.body.utilisateur_id,
+    publication_id: req.body.publication_id,
+    image: req.body.image,
+    // image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+  };
   // save dans la base de donnée
-  commentaire
-    .save()
-    .then(() => res.status(201).json({ message: "Objet enregistré !" }))
+  Commentaire.create(commentaire)
+    .then(() => res.status(201).json({ message: "Commentaire créé !" }))
     .catch((error) => res.status(400).json({ error }));
 };
 
 // modifier un objet existant dans la base de donnée
 exports.modifyCommentaire = (req, res, next) => {
-  // permet de savoir si image existante ou si nouvelle
-  const commentaireObject = req.file
-    ? {
-        ...JSON.parse(req.body.commentaire),
-        // ont génére une URL de l'image
-        imageUrl: `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
-        }`,
-      }
-    : { ...req.body }; // si il n'existe pas on fait une copie de req.body
-  commentaire
-    .updateOne(
-      { _id: req.params.id },
-      { ...commentaireObject, _id: req.params.id }
-    )
+  const _id = req.params.id;
+  Commentaire.update(req.body, {
+    where: { id: _id },
+  })
     .then(() => res.status(200).json({ message: "Objet modifié !" }))
     .catch((error) => res.status(400).json({ error }));
 };
@@ -48,16 +33,19 @@ exports.modifyCommentaire = (req, res, next) => {
 // supprimer un objet existant dans la base de donnée
 exports.deleteCommentaire = (req, res, next) => {
   //ont trouve l'objet dans la base de donnée
-  commentaire
-    .findOne({ _id: req.params.id })
+  const _id = req.params.id;
+  Commentaire.findByPk(_id)
     .then((commentaire) => {
       // ont récupère le nom du fichier à supprimer
-      const filename = commentaire.imageUrl.split("/images/")[1];
+      const filename = commentaire.image.split("/images/")[1];
       // ont supprime l'objet
+      // console.log(_id);
+      // console.log(filename);
       fs.unlink(`images/${filename}`, () => {
-        // ont renvoi une réponse si fonctionne ou non
-        commentaire
-          .deleteOne({ _id: req.params.id })
+        //     // ont renvoi une réponse si fonctionne ou non
+        Commentaire.destroy({
+          where: { id: _id },
+        })
           .then(() => res.status(200).json({ message: "Objet supprimé !" }))
           .catch((error) => res.status(400).json({ error }));
       });
@@ -67,65 +55,76 @@ exports.deleteCommentaire = (req, res, next) => {
 
 // :id <= parti de la route dynamique pour une recherche à l'unité dans la base de donnée
 exports.getOneCommentaire = (req, res, next) => {
-  // findOne pour trouver qu'un seul objet
-  commentaire
-    .findOne({ _id: req.params.id })
+  const _id = req.params.id;
+  // findByPk pour trouver qu'un seul objet
+  Commentaire.findByPk(_id)
     .then((commentaire) => res.status(200).json(commentaire))
     .catch((error) => res.status(500).json({ error }));
 };
 
 exports.getAllCommentaire = (req, res, next) => {
-  // find pour trouver tous les objets
-  commentaire
-    .find()
+  const _id = req.params.id;
+  // findByPk pour trouver qu'un seul objet
+  Commentaire.findAll(_id)
     // récupération du tableau de tous les commentaires, et ont renvoi le tableau reçu par le Back-End (base de donnée)
     .then((commentaires) => res.status(200).json(commentaires))
     .catch((error) => res.status(500).json({ error }));
 };
 
+//
+//
+//
 //Incrémentation des likes et dislikes utilisateur pour les commentaires
 exports.likeDislikeCommentaire = (req, res, next) => {
-  if (req.body.like === undefined || req.body.userId === undefined) {
-    return res.status(400).json({ message: "Bad request !" });
+  if (req.body.like === undefined || req.body.utilisateur_id === undefined) {
+    return res.status(401).json({ message: "Bad request !" });
   }
-  const id = req.params.id;
+  const _id = req.params.id;
   const like = req.body.like;
-  const userId = req.body.userId;
+  const utilisateur_id = req.body.utilisateur_id;
   console.log(req.body);
+  console.log(like);
 
   switch (like) {
     // Décrémentation d'un like et d'un utilisateur
     case 0:
-      commentaire
-        .findOne({ _id: id })
+      // findByPk pour trouver qu'un seul objet
+      Commentaire.findByPk(_id)
         .then((commentaire) => {
-          if (commentaire.usersLiked.includes(userId)) {
-            commentaire
-              .updateOne(
-                { _id: id },
-                // Décrémentation d'un like et d'un utilisateur
-                { $inc: { likes: -1 }, $pull: { usersLiked: userId } }
-              )
+          if (commentaire.usersLiked.includes(utilisateur_id)) {
+            Commentaire.update(
+              req.body,
+              {
+                where: { id: _id },
+              },
+              // Décrémentation d'un like et d'un utilisateur
+              { $inc: { likes: -1 }, $pull: { usersLiked: utilisateur_id } }
+            )
               .then(() => {
                 res.status(201).json({
-                  message: `Le vote pour le commentaire: ${commentaire.name} n'est plus pris en compte`,
+                  message: `Le vote pour la commentaire: ${commentaire.titre} n'est plus pris en compte`,
                 });
               })
-              .catch((error) => res.status(400).json({ error }));
+              .catch((error) => res.status(402).json({ error }));
           }
-          if (commentaire.usersDisliked.includes(userId)) {
-            commentaire
-              .updateOne(
-                { _id: id },
-                // Décrémentation d'un like et d'un utilisateur
-                { $inc: { dislikes: -1 }, $pull: { usersDisliked: userId } }
-              )
+          if (commentaire.usersDisliked.includes(utilisateur_id)) {
+            Commentaire.update(
+              req.body,
+              {
+                where: { id: _id },
+              },
+              // Décrémentation d'un like et d'un utilisateur
+              {
+                $inc: { dislikes: -1 },
+                $pull: { usersDisliked: utilisateur_id },
+              }
+            )
               .then(() => {
                 res.status(201).json({
-                  message: `Le vote pour le commentaire: ${commentaire.name} n'est plus pris en compte`,
+                  message: `Le vote pour la commentaire: ${commentaire.titre} n'est plus pris en compte`,
                 });
               })
-              .catch((error) => res.status(400).json({ error }));
+              .catch((error) => res.status(403).json({ error }));
           }
         })
         .catch((error) => {
@@ -134,27 +133,33 @@ exports.likeDislikeCommentaire = (req, res, next) => {
       break;
     // L'utilisateur aime la commentaire
     case 1:
-      commentaire
-        .updateOne(
-          { _id: id },
-          // Incrémentation d'un like et d'un utilisateur
-          { $inc: { likes: 1 }, $push: { usersLiked: userId } }
-        )
+      Commentaire.update(
+        req.body,
+        {
+          where: { id: _id },
+        },
+        // Incrémentation d'un like et d'un utilisateur
+        { $inc: { likes: 1 }, $push: { usersLiked: utilisateur_id } }
+      )
         .then(() =>
-          res.status(201).json({ message: `Vous aimez ce commentaire !` })
+          res.status(201).json({ message: `Vous aimez cette commentaire !` })
         )
         .catch((error) => res.status(500).json({ error }));
       break;
     // L'utilisateur n'aime pas la commentaire
     case -1:
-      commentaire
-        .updateOne(
-          { _id: id },
-          // Incrémentation d'un like et d'un utilisateur
-          { $inc: { dislikes: 1 }, $push: { usersDisliked: userId } }
-        )
+      Commentaire.update(
+        req.body,
+        {
+          where: { id: _id },
+        },
+        // Incrémentation d'un like et d'un utilisateur
+        { $inc: { dislikes: 1 }, $push: { usersDisliked: utilisateur_id } }
+      )
         .then(() =>
-          res.status(201).json({ message: `Vous n'aimez pas ce commentaire !` })
+          res
+            .status(201)
+            .json({ message: `Vous n'aimez pas cette commentaire !` })
         )
         .catch((error) => res.status(500).json({ error }));
       break;

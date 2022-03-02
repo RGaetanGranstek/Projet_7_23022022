@@ -57,7 +57,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 // mise en place du début de la route et pour cette route ont utilise le routeur publicationRoutes
 app.use("/api/publication", publicationRoutes);
 // mise en place du début de la route et pour cette route ont utilise le routeur commentaireRoutes
-app.use("/api/commentaire", commentaireRoutes);
+app.use("/api/publication/:id/commentaire", commentaireRoutes);
 // mise en place route pour l'authentification
 app.use("/api/auth", userRoutes);
 
