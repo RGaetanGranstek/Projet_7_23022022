@@ -42,7 +42,7 @@ exports.deleteCommentaire = (req, res, next) => {
       // console.log(_id);
       // console.log(filename);
       fs.unlink(`images/${filename}`, () => {
-        //     // ont renvoi une réponse si fonctionne ou non
+        // ont renvoi une réponse si fonctionne ou non
         Commentaire.destroy({
           where: { id: _id },
         })

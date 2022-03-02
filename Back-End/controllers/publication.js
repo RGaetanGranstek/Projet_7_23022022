@@ -42,7 +42,7 @@ exports.deletePublication = (req, res, next) => {
       // console.log(_id);
       // console.log(filename);
       fs.unlink(`images/${filename}`, () => {
-        //     // ont renvoi une réponse si fonctionne ou non
+        // ont renvoi une réponse si fonctionne ou non
         Publication.destroy({
           where: { id: _id },
         })
