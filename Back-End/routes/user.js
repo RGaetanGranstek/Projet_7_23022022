@@ -12,7 +12,7 @@ router.post("/signup", userCtrl.signup);
 router.post("/login", userCtrl.login);
 
 // supprimer un compte existant dans la base de donnée
-router.delete("/:id", auth, multer, userCtrl.deleteUtilisateur);
+router.delete("/delete/:id", auth, multer, userCtrl.deleteUtilisateur);
 
 // mettre à jour un compte existant dans la base de donnée
 router.put("/update", auth, multer, userCtrl.updateUtilisateur);

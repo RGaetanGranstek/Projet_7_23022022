@@ -1,9 +1,5 @@
 // model user
 const User = require("../models/user");
-// importation du model pour la suppression de compte
-const Publication = require("../models/publication");
-// importation du model pour la suppression de compte
-const Commentaire = require("../models/commentaire");
 // package cryptage des mots de passe (hashage)
 const bcrypt = require("bcrypt");
 // création de token et permet aussi de les vérifier
@@ -174,42 +170,21 @@ exports.updateUtilisateur = (req, res, next) => {
     // .catch((error) => res.status(502).json({ error }));
   });
 };
+// exports.updateUtilisateur = (req, res, next) => {
+//   const _id = req.params.id;
+//   User.update({
+//     where: { id: _id },
+//   })
+//     .then(() => res.status(200).json({ message: "Information de compte mis à jour !" }))
+//     .catch((error) => res.status(400).json({ error }));
+// };
 
-//fonction delete pour supprimer un utilisateur existants
+//fonction delete pour supprimer un utilisateur existants de la base de donnée
 exports.deleteUtilisateur = (req, res, next) => {
-  // ont récupère l'utilisateur dans la base de donnée qui correspond à l'adresse email entrée par l'utilisateur
-  User.findOne({
-    where: {
-      email: MaskData.maskEmail2(req.body.email, emailMask2Options),
-    },
+  const _id = req.params.id;
+  User.destroy({
+    where: { id: _id },
   })
-    .then((user) => {
-      // si ont ne trouve pas de correspondance ont renvoi une erreur
-      if (!user) {
-        return res.status(401).json({ error: "Utilisateur non trouvé !" });
-      }
-      // ont compare le mot de passe entré avec le hash enregistré dans la base de donnée
-      bcrypt
-        .compare(req.body.password, user.password)
-        .then((valid) => {
-          // si la comparaison n'est pas bonne on renvoi une erreur
-          if (!valid) {
-            return res.status(401).json({ error: "Mot de passe incorrect !" });
-          }
-          // si l'identification est bonne on renvoi le user._id attendu par le front-end et un token
-          res.status(200).json({
-            userId: user._id,
-            token: jwt.sign(
-              // donnée que l'ont veux encodé à l'intérieur du token
-              { userId: user._id },
-              // clé secrete pour l'encodage
-              "RANDOM_TOKEN_SECRET",
-              // argument de configuration (expiration 24H)
-              { expiresIn: "24h" }
-            ),
-          });
-        })
-        .catch((error) => res.status(500).json({ error }));
-    })
-    .catch((error) => res.status(500).json({ error }));
+    .then(() => res.status(200).json({ message: "Utilisateur supprimé !" }))
+    .catch((error) => res.status(400).json({ error }));
 };
