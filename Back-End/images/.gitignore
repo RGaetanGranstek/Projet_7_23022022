@@ -1,7 +1,6 @@
 *.jpg
 *.jpeg
 *.png
-*.env
 
 # image de profil par defaut
 !utilisateur_defaut.jpg
