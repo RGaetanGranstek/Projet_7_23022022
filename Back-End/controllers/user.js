@@ -58,16 +58,17 @@ exports.signup = (req, res, next) => {
         nom: req.body.nom,
         prenom: req.body.prenom,
         pseudo: req.body.pseudo,
-        email: MaskData.maskEmail2(req.body.email, emailMask2Options),
+        email: req.body.email,
+        // email: MaskData.maskEmail2(req.body.email, emailMask2Options),
         password: hash,
-        image: req.body.image,
-        // image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+        imageUrl: req.body.imageUrl,
+        // imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
       };
       // console.log(user);
-      // Save Tutorial in the database
       User.create(user).then(() =>
         res.status(201).json({ message: "Utilisateur créé !" })
-      );
+      )
+        .catch(() => res.status(502).json({ message: "Utilisateur existant !" }));
     })
     .catch((error) => res.status(502).json({ error }));
 };
@@ -77,7 +78,8 @@ exports.login = (req, res, next) => {
   // ont récupère l'utilisateur dans la base de donnée qui correspond à l'adresse email entrée par l'utilisateur
   User.findOne({
     where: {
-      email: MaskData.maskEmail2(req.body.email, emailMask2Options),
+      email: req.body.email,
+      // email: MaskData.maskEmail2(req.body.email, emailMask2Options),
     },
   })
     .then((user) => {
@@ -100,84 +102,16 @@ exports.login = (req, res, next) => {
               // donnée que l'ont veux encodé à l'intérieur du token
               { userId: user._id },
               // clé secrete pour l'encodage
-              "RANDOM_TOKEN_SECRET",
+              process.env.TOKEN,
               // argument de configuration (expiration 24H)
               { expiresIn: "24h" }
             ),
           });
         })
-        .catch((error) => res.status(500).json({ error }));
+        .catch((error) => res.status(501).json({ error }));
     })
     .catch((error) => res.status(500).json({ error }));
 };
-
-//
-//
-//
-//fonction update pour mettre à jour un utilisateur existants
-exports.updateUtilisateur = (req, res, next) => {
-  const _id = req.params.id;
-  if (!schema.validate(req.body.password)) {
-    //Renvoie une erreur si le schema de mot de passe n'est pas respecté
-    return res.status(400).json({
-      message:
-        "Le mot de passe doit contenir au moins 10 caractères, une majuscule, une minuscule, 2 chiffres, un symbole ainsi qu'aucun espace.",
-    });
-  }
-  // ont récupère l'utilisateur dans la base de donnée qui correspond à l'adresse email entrée par l'utilisateur
-  User.findOne({
-    where: {
-      email: MaskData.maskEmail2(req.body.email, emailMask2Options),
-    },
-  }).then((user) => {
-    // si ont ne trouve pas de correspondance ont renvoi une erreur
-    if (!user) {
-      return res.status(401).json({ error: "Utilisateur non trouvé !" });
-    }
-    // ont compare le mot de passe entré avec le hash enregistré dans la base de donnée
-    bcrypt
-      .compare(req.body.password, user.password)
-      .hash(req.body.password, 10)
-      .then((hash, valid) => {
-        // si la comparaison n'est pas bonne on renvoi une erreur
-        if (!valid) {
-          return res.status(401).json({ error: "Mot de passe incorrect !" });
-        }
-        // si l'identification est bonne on renvoi le user._id attendu par le front-end et un token
-        res.status(200).json(
-          User.update(
-            {
-              nom: req.body.nom,
-              prenom: req.body.prenom,
-              pseudo: req.body.pseudo,
-              email: MaskData.maskEmail2(req.body.email, emailMask2Options),
-              password: hash,
-              image: req.body.image,
-              // image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
-            },
-            {
-              where: { id: _id },
-            }
-          )
-            .then(() =>
-              res
-                .status(200)
-                .json({ message: "Informations de compte modifié !" })
-            )
-            .catch((error) => res.status(400).json({ error }))
-        );
-      });
-    // .catch((error) => res.status(502).json({ error }));
-  });
-};
-// exports.updateUtilisateur = (req, res, next) => {
-//   const _id = req.params.id;
-//   User.update({
-//     where: { id: _id },
-//   })
-//     .then(() => res.status(200).json({ message: "Information de compte mis à jour !" }))
-//     .catch((error) => res.status(400).json({ error }));
-// };
 
 //fonction delete pour supprimer un utilisateur existants de la base de donnée
 exports.deleteUtilisateur = (req, res, next) => {
@@ -188,3 +122,5 @@ exports.deleteUtilisateur = (req, res, next) => {
     .then(() => res.status(200).json({ message: "Utilisateur supprimé !" }))
     .catch((error) => res.status(400).json({ error }));
 };
+
+// il faut enlever emailMask2Options et soit hashé l email en synchrone, sinon en email display(un mail visible et un invisible).

@@ -9,7 +9,7 @@ const publication = sequelize.define(
     utilisateur_id: { type: Sequelize.STRING, allowNull: false },
     titre: { type: Sequelize.STRING, allowNull: false },
     message: { type: Sequelize.STRING, allowNull: false },
-    image: {
+    imageUrl: {
       type: Sequelize.STRING,
     },
   },

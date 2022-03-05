@@ -11,8 +11,8 @@ exports.createPublication = (req, res, next) => {
     utilisateur_id: req.body.utilisateur_id,
     titre: req.body.titre,
     message: req.body.message,
-    image: req.body.image,
-    // image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+    imageUrl: req.body.imageURL,
+    // imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
   };
   // save dans la base de donnée
   Publication.create(publication)
@@ -75,93 +75,93 @@ exports.getAllPublication = (req, res, next) => {
 //
 //
 //Incrémentation des likes et dislikes utilisateur pour les publications
-exports.likeDislikePublication = (req, res, next) => {
-  if (req.body.like === undefined || req.body.utilisateur_id === undefined) {
-    return res.status(401).json({ message: "Bad request !" });
-  }
-  const _id = req.params.id;
-  const like = req.body.like;
-  const utilisateur_id = req.body.utilisateur_id;
-  console.log(req.body);
-  console.log(like);
+// exports.likeDislikePublication = (req, res, next) => {
+//   if (req.body.like === undefined || req.body.utilisateur_id === undefined) {
+//     return res.status(401).json({ message: "Bad request !" });
+//   }
+//   const _id = req.params.id;
+//   const like = req.body.like;
+//   const utilisateur_id = req.body.utilisateur_id;
+//   console.log(req.body);
+//   console.log(like);
 
-  switch (like) {
-    // Décrémentation d'un like et d'un utilisateur
-    case 0:
-      // findByPk pour trouver qu'un seul objet
-      Publication.findByPk(_id)
-        .then((publication) => {
-          if (publication.usersLiked.includes(utilisateur_id)) {
-            Publication.update(
-              req.body,
-              {
-                where: { id: _id },
-              },
-              // Décrémentation d'un like et d'un utilisateur
-              { $inc: { likes: -1 }, $pull: { usersLiked: utilisateur_id } }
-            )
-              .then(() => {
-                res.status(201).json({
-                  message: `Le vote pour la publication: ${publication.titre} n'est plus pris en compte`,
-                });
-              })
-              .catch((error) => res.status(402).json({ error }));
-          }
-          if (publication.usersDisliked.includes(utilisateur_id)) {
-            Publication.update(
-              req.body,
-              {
-                where: { id: _id },
-              },
-              // Décrémentation d'un like et d'un utilisateur
-              {
-                $inc: { dislikes: -1 },
-                $pull: { usersDisliked: utilisateur_id },
-              }
-            )
-              .then(() => {
-                res.status(201).json({
-                  message: `Le vote pour la publication: ${publication.titre} n'est plus pris en compte`,
-                });
-              })
-              .catch((error) => res.status(403).json({ error }));
-          }
-        })
-        .catch((error) => {
-          return res.status(500).json({ error });
-        });
-      break;
-    // L'utilisateur aime la publication
-    case 1:
-      Publication.update(
-        req.body,
-        {
-          where: { id: _id },
-        },
-        // Incrémentation d'un like et d'un utilisateur
-        { $inc: { likes: 1 }, $push: { usersLiked: utilisateur_id } }
-      )
-        .then(() =>
-          res.status(201).json({ message: `Vous aimez cette publication !` })
-        )
-        .catch((error) => res.status(500).json({ error }));
-      break;
-    // L'utilisateur n'aime pas la publication
-    case -1:
-      Publication.update(
-        req.body,
-        {
-          where: { id: _id },
-        },
-        // Incrémentation d'un like et d'un utilisateur
-        { $inc: { dislikes: 1 }, $push: { usersDisliked: utilisateur_id } }
-      )
-        .then(() =>
-          res
-            .status(201)
-            .json({ message: `Vous n'aimez pas cette publication !` })
-        )
-        .catch((error) => res.status(500).json({ error }));
-      break;
-  }
-};
+//   switch (like) {
+//     // Décrémentation d'un like et d'un utilisateur
+//     case 0:
+//       // findByPk pour trouver qu'un seul objet
+//       Publication.findByPk(_id)
+//         .then((publication) => {
+//           if (publication.usersLiked.includes(utilisateur_id)) {
+//             Publication.update(
+//               req.body,
+//               {
+//                 where: { id: _id },
+//               },
+//               // Décrémentation d'un like et d'un utilisateur
+//               { $inc: { likes: -1 }, $pull: { usersLiked: utilisateur_id } }
+//             )
+//               .then(() => {
+//                 res.status(201).json({
+//                   message: `Le vote pour la publication: ${publication.titre} n'est plus pris en compte`,
+//                 });
+//               })
+//               .catch((error) => res.status(402).json({ error }));
+//           }
+//           if (publication.usersDisliked.includes(utilisateur_id)) {
+//             Publication.update(
+//               req.body,
+//               {
+//                 where: { id: _id },
+//               },
+//               // Décrémentation d'un like et d'un utilisateur
+//               {
+//                 $inc: { dislikes: -1 },
+//                 $pull: { usersDisliked: utilisateur_id },
+//               }
+//             )
+//               .then(() => {
+//                 res.status(201).json({
+//                   message: `Le vote pour la publication: ${publication.titre} n'est plus pris en compte`,
+//                 });
+//               })
+//               .catch((error) => res.status(403).json({ error }));
+//           }
+//         })
+//         .catch((error) => {
+//           return res.status(500).json({ error });
+//         });
+//       break;
+//     // L'utilisateur aime la publication
+//     case 1:
+//       Publication.update(
+//         req.body,
+//         {
+//           where: { id: _id },
+//         },
+//         // Incrémentation d'un like et d'un utilisateur
+//         { $inc: { likes: 1 }, $push: { usersLiked: utilisateur_id } }
+//       )
+//         .then(() =>
+//           res.status(201).json({ message: `Vous aimez cette publication !` })
+//         )
+//         .catch((error) => res.status(500).json({ error }));
+//       break;
+//     // L'utilisateur n'aime pas la publication
+//     case -1:
+//       Publication.update(
+//         req.body,
+//         {
+//           where: { id: _id },
+//         },
+//         // Incrémentation d'un like et d'un utilisateur
+//         { $inc: { dislikes: 1 }, $push: { usersDisliked: utilisateur_id } }
+//       )
+//         .then(() =>
+//           res
+//             .status(201)
+//             .json({ message: `Vous n'aimez pas cette publication !` })
+//         )
+//         .catch((error) => res.status(500).json({ error }));
+//       break;
+//   }
+// };

@@ -9,7 +9,7 @@ const commentaire = sequelize.define(
     message: { type: Sequelize.STRING, allowNull: false },
     utilisateur_id: { type: Sequelize.STRING, allowNull: false },
     publication_id: { type: Sequelize.STRING, allowNull: false },
-    image: {
+    imageUrl: {
       type: Sequelize.STRING,
     },
   },

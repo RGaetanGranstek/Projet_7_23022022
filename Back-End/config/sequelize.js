@@ -1,12 +1,15 @@
 const Sequelize = require("sequelize");
 
+// Pour lire les fichiers .env
+require("dotenv").config({ path: process.cwd() + "/.env.sample" });
+
 console.log("Get connection ...");
 
 const sequelize = new Sequelize({
-  database: "groupomania",
-  username: "root",
-  password: "!F1usd100!",
-  host: "localhost",
+  database: process.env.bdd_nom,
+  username: process.env.bdd_login,
+  password: process.env.bdd_password,
+  host: process.env.bdd_host,
   dialect: "mysql",
 });
 

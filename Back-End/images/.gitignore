@@ -1,6 +1,7 @@
 *.jpg
 *.jpeg
 *.png
+*.env
 
 # image de profil par defaut
-!4 wall ps3 movies (4).jpg
+!utilisateur_defaut.jpg

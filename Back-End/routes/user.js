@@ -15,6 +15,6 @@ router.post("/login", userCtrl.login);
 router.delete("/delete/:id", auth, multer, userCtrl.deleteUtilisateur);
 
 // mettre à jour un compte existant dans la base de donnée
-router.put("/update", auth, multer, userCtrl.updateUtilisateur);
+// router.put("/update", auth, multer, userCtrl.updateUtilisateur);
 
 module.exports = router;

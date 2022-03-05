@@ -16,7 +16,7 @@ const User = sequelize.define(
       allowNull: false,
       defaultValue: "UTILISATEUR",
     },
-    image: {
+    imageUrl: {
       type: Sequelize.STRING,
     },
   },
