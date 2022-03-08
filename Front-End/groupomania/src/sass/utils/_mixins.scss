@@ -1,0 +1,27 @@
+// breakpoints
+@mixin breakpoint($size-screen) {
+  @if $size-screen == laptop-desktop {
+    @media (min-width: 64em) {
+      @content;
+    }
+  } @else if $size-screen == tablet {
+    @media (min-width: 550px) {
+      @content;
+    }
+  } @else if $size-screen == mobileonly {
+    @media (max-width: 550px) {
+      @content;
+    }
+  }
+}
+
+// reset
+@mixin reset {
+  margin: 0;
+  padding: 0;
+}
+
+// background
+@mixin background-color($background-color: $color-tertiary-light) {
+  background: $background-color;
+}

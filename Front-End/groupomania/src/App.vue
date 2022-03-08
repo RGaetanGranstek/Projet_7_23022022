@@ -1,28 +1,22 @@
 <template>
-  <div>
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="fullscreen background2" >
+    <img class="logo_accueil" alt="Groupomania logo" src="./assets/icon-left-font-monochrome-white.png">
+    <Accueil_Groupomania msg="Notre entreprise, spécialisée dans la grande distribution, est en pleine expansion. Nous avons actuellement
+plus de 600 collaborateurs et avons beaucoup recruté depuis quelques années. Nous étions uniquement 300 il y a 3 ans."/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Accueil_Groupomania from './components/Accueil_Groupomania.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Accueil_Groupomania
   }
 }
 </script>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+@import "./sass/main.scss";
 </style>

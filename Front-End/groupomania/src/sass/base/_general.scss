@@ -1,0 +1,54 @@
+// background
+#app {
+  @include breakpoint(mobileonly);
+  @include reset;
+  font-family: $font-family-text;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: $color-primary;
+  background-image: url(../src/assets/highway-gdb897aafa_1920.jpg);
+  background-position: center;
+  background-size: cover;
+  img.logo_accueil {
+    min-height: 200px;
+    max-height: 350px;
+    width: 60%;
+    @include breakpoint(tablet) {
+      width: 45%;
+    }
+    @include breakpoint(laptop-desktop) {
+      width: 30%;
+    }
+  }
+}
+.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: auto;
+}
+.background2 {
+  background: $background-gradient;
+  background-position: center;
+  background-size: cover;
+}
+.Bienvenue {
+  h1,
+  h2 {
+    border-radius: $border-radius;
+  }
+  h1,
+  h2 {
+    @include background-color($background-color: $color-secondary-transparent);
+  }
+  a {
+    font-size: $font-H;
+    color: white;
+    &:hover {
+      color: $color-secondary;
+    }
+  }
+}
