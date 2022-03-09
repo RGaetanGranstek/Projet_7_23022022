@@ -1,7 +1,22 @@
-// background
+// General
 #app {
   @include breakpoint(mobileonly);
   @include reset;
+  overflow-y: scroll;
+  nav {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    text-align: right;
+    a {
+      font-weight: bold;
+      color: #2c3e50;
+
+      &.router-link-exact-active {
+        color: #42b983;
+      }
+    }
+  }
   font-family: $font-family-text;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -10,7 +25,8 @@
   background-image: url(../src/assets/highway-gdb897aafa_1920.jpg);
   background-position: center;
   background-size: cover;
-  img.logo_accueil {
+  img.logo_accueil,
+  img.logo_about {
     min-height: 200px;
     max-height: 350px;
     width: 60%;
@@ -18,10 +34,11 @@
       width: 45%;
     }
     @include breakpoint(laptop-desktop) {
-      width: 30%;
+      width: 25%;
     }
   }
 }
+// Page HomeView, AboutView
 .fullscreen {
   position: fixed;
   top: 0;
@@ -35,13 +52,12 @@
   background-position: center;
   background-size: cover;
 }
+// Page Accueil_Groupomania
 .Bienvenue {
+  padding-bottom: 130px;
   h1,
   h2 {
     border-radius: $border-radius;
-  }
-  h1,
-  h2 {
     @include background-color($background-color: $color-secondary-transparent);
   }
   a {
@@ -50,5 +66,23 @@
     &:hover {
       color: $color-secondary;
     }
+  }
+}
+// Page AboutView
+.about {
+  padding-bottom: 130px;
+  text-align: -webkit-center;
+  h1,
+  p {
+    border-radius: $border-radius;
+    @include background-color($background-color: $color-secondary-transparent);
+  }
+  h1 {
+    margin-top: -50px;
+    width: 45%;
+  }
+  p {
+    width: 75%;
+    font-size: $font-H;
   }
 }

@@ -1,0 +1,29 @@
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  background-color: $color-primary;
+  div {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 2%;
+    img {
+      height: 100px;
+    }
+    ul {
+      margin: 0;
+      li {
+        list-style-type: none;
+        a {
+          display: flex;
+          margin: 7px 0;
+          color: white;
+          &:hover {
+            color: $color-secondary;
+          }
+        }
+      }
+    }
+  }
+}
