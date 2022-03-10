@@ -2,8 +2,8 @@
   <div class="Bienvenue">
     <h1>Bienvenue chez Groupomania !</h1>
     <ul>
-      <li><a href="" target="_blank" rel="noopener">Inscription</a></li>
-      <li><a href="" target="_blank" rel="noopener">Connexion</a></li>
+      <li><router-link to="/signup">Inscription</router-link></li>
+      <li><router-link to="/login">Connexion</router-link></li>
     </ul>
     <h2>{{ msg }}</h2>
   </div>
