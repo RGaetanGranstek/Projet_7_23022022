@@ -68,7 +68,7 @@ exports.signup = (req, res, next) => {
       User.create(user).then(() =>
         res.status(201).json({ message: "Utilisateur créé !" })
       )
-        .catch(() => res.status(502).json({ message: "Utilisateur existant !" }));
+        .catch(() => res.status(503).json({ message: "Utilisateur existant !" }));
     })
     .catch((error) => res.status(502).json({ error }));
 };
@@ -123,4 +123,12 @@ exports.deleteUtilisateur = (req, res, next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
-// il faut enlever emailMask2Options et soit hashé l email en synchrone, sinon en email display(un mail visible et un invisible).
+// recherche d'information utilisateur
+exports.userProfil = (req, res, next) => {
+  const _id = req.params.id;
+  User.findByPk({
+    where: { id: _id },
+  })
+    .then((user) => res.status(200).json(user))
+    .catch((error) => res.status(505).json({ error }));
+};
