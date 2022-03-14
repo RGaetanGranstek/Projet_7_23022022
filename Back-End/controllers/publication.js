@@ -64,7 +64,7 @@ exports.getOnePublication = (req, res, next) => {
 
 exports.getAllPublication = (req, res, next) => {
   const _id = req.params.id;
-  // findByPk pour trouver qu'un seul objet
+  // findByPk pour trouver tous les objets
   Publication.findAll(_id)
     // récupération du tableau de tous les publications, et ont renvoi le tableau reçu par le Back-End (base de donnée)
     .then((publications) => res.status(200).json(publications))

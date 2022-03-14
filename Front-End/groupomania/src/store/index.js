@@ -30,10 +30,12 @@ export default createStore({
     status: '',
     user: user,
     userInfos: {
+      id: '',
       nom: '',
       prenom: '',
       pseudo: '',
       email: '',
+      role: '',
     },
   },
   // propriété calculées => propriété d'état du magasin
@@ -63,9 +65,30 @@ export default createStore({
   // Les actions sont similaires aux mutations, les différences étant que => Au lieu de muter l’état, les actions commettent des mutations. et/ou Les actions peuvent contenir des opérations asynchrones arbitraires.
   actions: {
     userProfil: ({ commit }) => {
-      instance.post('/profil')
-        .then(function (response) {
-          commit('userInfos', response.data.profil);
+      let user = localStorage.getItem('user')
+      let userId = JSON.parse(user)
+      // axios.get('http://localhost:3000/api/auth/profil/' + localStorage.getItem("user.userId"))
+      // axios.get('http://localhost:3000/api/auth/profil/35')
+      instance.get('/profil/' + userId.userId)
+        // .then((response) => {
+        //   console.log(userId.userId)
+        //   console.log(localStorage)
+        //   console.log(response);
+        //   console.log(response.data);
+        // })
+        // .catch(function (error) {
+        //   if (error.response) {
+        //     console.log(error.response.data);
+        //     console.log(error.response.status);
+        //     console.log(error.response.headers);
+        //   }
+        // });
+        .then((response) => {
+          commit('userInfos', response.data);
+          console.log(userId.userId)
+          console.log(localStorage)
+          console.log(response);
+          console.log(response.data);
         })
         .catch(function () {
         });
@@ -87,11 +110,12 @@ export default createStore({
     },
     signup: ({ commit }, userInfos) => {
       commit('setStatus', '');
+      console.log(userInfos);
       return new Promise((resolve, reject) => {
-        commit;
         instance.post('/signup', userInfos)
           .then(function (response) {
             commit('setStatus', 'created');
+            console.log(response);
             resolve(response);
           })
           .catch(function (error) {
@@ -105,9 +129,3 @@ export default createStore({
   modules: {
   }
 })
-
-
-  // - récupérer la méthode login de loginview pour l utiliser dans signupview
-  // - récupération info profil probleme
-  // - cacher le password côté user
-

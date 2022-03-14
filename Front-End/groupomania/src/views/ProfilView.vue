@@ -1,6 +1,6 @@
 <template>
   <div class="fullscreen background2 Bienvenue">
-    <div class="card">
+    <div class="card card-container">
       <h1>Profil de {{ user.pseudo }}</h1>
       <p>{{ user.prenom }} {{ user.nom }} {{ user.email }}</p>
       <div class="form-row">
@@ -22,6 +22,7 @@ export default {
     FooterSection,
   },
   mounted() {
+    console.log(this.$store.state);
     console.log(this.$store.state.user);
     if (this.$store.state.user.userId == -1) {
       this.$router.push("/");

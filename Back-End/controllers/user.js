@@ -97,10 +97,10 @@ exports.login = (req, res, next) => {
           }
           // si l'identification est bonne on renvoi le user._id attendu par le front-end et un token
           res.status(200).json({
-            userId: user._id,
+            userId: user.id,
             token: jwt.sign(
               // donnée que l'ont veux encodé à l'intérieur du token
-              { userId: user._id },
+              { userId: user.id },
               // clé secrete pour l'encodage
               process.env.TOKEN,
               // argument de configuration (expiration 24H)
@@ -126,9 +126,20 @@ exports.deleteUtilisateur = (req, res, next) => {
 // recherche d'information utilisateur
 exports.userProfil = (req, res, next) => {
   const _id = req.params.id;
-  User.findByPk({
-    where: { id: _id },
-  })
-    .then((user) => res.status(200).json(user))
+  console.log(_id);
+  User.findByPk(_id)
+    .then((profil) => res.status(200).json(profil))
     .catch((error) => res.status(505).json({ error }));
 };
+// exports.userProfil = async (req, res) => {
+//   // on trouve l'utilisateur et on renvoie l'objet profil
+//   try {
+//     const _id = req.params.id;
+//     const profil = await User.findByPk(
+//       _id
+//     );
+//     res.status(200).send(profil);
+//   } catch (error) {
+//     return res.status(500).send({ error: "Erreur serveur" });
+//   }
+// };
