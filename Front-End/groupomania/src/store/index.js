@@ -66,12 +66,14 @@ export default createStore({
   actions: {
     userProfil: ({ commit }) => {
       let user = localStorage.getItem('user')
-      let userId = JSON.parse(user)
+      let userLocal = JSON.parse(user)
+      console.log(userLocal.userId)
+      console.log(userLocal.token)
       // axios.get('http://localhost:3000/api/auth/profil/' + localStorage.getItem("user.userId"))
       // axios.get('http://localhost:3000/api/auth/profil/35')
-      instance.get('/profil/' + userId.userId)
+      instance.get('/profil/' + userLocal.userId, { headers: { "Authorization": "Bearer " + userLocal.token } })
         // .then((response) => {
-        //   console.log(userId.userId)
+        //   console.log(userLocal.userId)
         //   console.log(localStorage)
         //   console.log(response);
         //   console.log(response.data);
@@ -85,7 +87,7 @@ export default createStore({
         // });
         .then((response) => {
           commit('userInfos', response.data);
-          console.log(userId.userId)
+          console.log(userLocal.userId)
           console.log(localStorage)
           console.log(response);
           console.log(response.data);
