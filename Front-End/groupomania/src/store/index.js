@@ -36,6 +36,7 @@ export default createStore({
       pseudo: '',
       email: '',
       role: '',
+      imageUrl: '',
     },
   },
   // propriété calculées => propriété d'état du magasin
@@ -125,9 +126,47 @@ export default createStore({
             reject(error);
           });
       });
+    },
+    updateAccount: ({ commit }) => {
+      return new Promise((resolve, reject) => {
+        let user = localStorage.getItem('user')
+        let userLocal = JSON.parse(user)
+        instance.put('/update/' + userLocal.userId, { headers: { "Authorization": "Bearer " + userLocal.token } })
+          .then(function (response) {
+            commit('setStatus', 'Account_updated');
+            console.log(response);
+            resolve(response);
+          })
+          .catch(function (error) {
+            commit('setStatus', 'error_Account_updated');
+            console.log(error);
+            reject(error);
+          });
+      }
+      )
+    },
+    deleteAccount: ({ commit }) => {
+      return new Promise((resolve, reject) => {
+        let user = localStorage.getItem('user')
+        let userLocal = JSON.parse(user)
+        instance.delete('/delete/' + userLocal.userId, { headers: { "Authorization": "Bearer " + userLocal.token } })
+          .then(function (response) {
+            commit('setStatus', 'Account_deleted');
+            console.log(response);
+            resolve(response);
+          })
+          .catch(function (error) {
+            commit('setStatus', 'error_Account_deleted');
+            console.log(error);
+            reject(error);
+          });
+      }
+      )
     }
   },
   // Vuex nous permet de diviser notre magasin en modules. Chaque module peut contenir son propre état, des mutations, des actions, des getters et même des modules imbriqués
   modules: {
   }
 })
+
+résoudre mon probléme de auth update en front end(fonctionne en back)

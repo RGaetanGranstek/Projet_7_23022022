@@ -61,8 +61,6 @@ exports.signup = (req, res, next) => {
         email: req.body.email,
         // email: MaskData.maskEmail2(req.body.email, emailMask2Options),
         password: hash,
-        imageUrl: req.body.imageUrl,
-        // imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
       };
       // console.log(user);
       User.create(user).then(() =>
@@ -70,7 +68,7 @@ exports.signup = (req, res, next) => {
       )
         .catch(() => res.status(503).json({ message: "Utilisateur existant !" }));
     })
-    .catch((error) => res.status(502).json({ error }));
+  // .catch((error) => res.status(502).json({ error }));
 };
 
 //fonction login pour connecter les utilisateurs existants
@@ -113,6 +111,28 @@ exports.login = (req, res, next) => {
     .catch((error) => res.status(500).json({ error }));
 };
 
+// modifier un objet existant dans la base de donnée
+exports.updateUtilisateur = (req, res, next) => {
+  const _id = req.params.id;
+  // console.log(_id);
+  // permet de savoir si image existante ou si nouvelle
+  const profilImage = req.file
+    ? {
+      ...JSON.parse(req.body.userId),
+      // ont génére une URL de l'image
+      imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename
+        }`,
+    }
+    : { ...req.body }; // si il n'existe pas on fait une copie de req.body
+  User.update(
+    { ...profilImage }, { where: { id: _id } }
+  )
+    .then(() => res.status(200).json({ message: "Utilisateur modifié !" }))
+    .catch((error) => res.status(505).json({ error }));
+  // console.log(User);
+  // console.log(profilImage);
+};
+
 //fonction delete pour supprimer un utilisateur existants de la base de donnée
 exports.deleteUtilisateur = (req, res, next) => {
   const _id = req.params.id;
@@ -126,20 +146,8 @@ exports.deleteUtilisateur = (req, res, next) => {
 // recherche d'information utilisateur
 exports.userProfil = (req, res, next) => {
   const _id = req.params.id;
-  console.log(_id);
+  // console.log(_id);
   User.findByPk(_id)
     .then((profil) => res.status(200).json(profil))
     .catch((error) => res.status(505).json({ error }));
 };
-// exports.userProfil = async (req, res) => {
-//   // on trouve l'utilisateur et on renvoie l'objet profil
-//   try {
-//     const _id = req.params.id;
-//     const profil = await User.findByPk(
-//       _id
-//     );
-//     res.status(200).send(profil);
-//   } catch (error) {
-//     return res.status(500).send({ error: "Erreur serveur" });
-//   }
-// };

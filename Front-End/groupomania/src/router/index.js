@@ -30,6 +30,16 @@ const routes = [
     path: '/profil',
     name: 'Profil',
     component: ProfilView
+  },
+  {
+    path: '/delete',
+    name: 'delete Profil',
+    component: ProfilView
+  },
+  {
+    path: '/update',
+    name: 'update Profil',
+    component: ProfilView
   }
 ]
 

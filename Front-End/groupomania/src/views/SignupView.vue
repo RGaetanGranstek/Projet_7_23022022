@@ -23,7 +23,7 @@
       <div class="form-row">
         <input v-model="password" type="password" placeholder="Mot de passe" />
       </div>
-      <div class="form-row" v-if="'create' && status == 'error_create'">
+      <div class="form-row" v-if="status == 'error_create'">
         Quelque chose cloche
       </div>
       <div class="form-row">

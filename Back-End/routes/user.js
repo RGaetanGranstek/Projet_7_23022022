@@ -18,6 +18,6 @@ router.delete("/delete/:id", auth, multer, userCtrl.deleteUtilisateur);
 router.get("/profil/:id", auth, multer, userCtrl.userProfil);
 
 // mettre à jour un compte existant dans la base de donnée
-// router.put("/update", auth, multer, userCtrl.updateUtilisateur);
+router.put("/update/:id", auth, multer, userCtrl.updateUtilisateur);
 
 module.exports = router;
