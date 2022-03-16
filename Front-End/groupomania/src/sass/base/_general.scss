@@ -104,6 +104,10 @@
 .titleProfil {
   background: $color-secondary !important;
 }
+.profilImg {
+  max-height: 90px;
+  border-radius: 45px;
+}
 .deleteAccount {
   color: white;
   background: red;

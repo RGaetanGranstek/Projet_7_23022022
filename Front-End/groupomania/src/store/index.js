@@ -127,11 +127,11 @@ export default createStore({
           });
       });
     },
-    updateAccount: ({ commit }) => {
+    updateAccount: ({ commit }, userInfos) => {
       return new Promise((resolve, reject) => {
         let user = localStorage.getItem('user')
         let userLocal = JSON.parse(user)
-        instance.put('/update/' + userLocal.userId, { headers: { "Authorization": "Bearer " + userLocal.token } })
+        instance.put('/update/' + userLocal.userId, userInfos, { headers: { "Authorization": "Bearer " + userLocal.token } })
           .then(function (response) {
             commit('setStatus', 'Account_updated');
             console.log(response);
@@ -139,7 +139,6 @@ export default createStore({
           })
           .catch(function (error) {
             commit('setStatus', 'error_Account_updated');
-            console.log(error);
             reject(error);
           });
       }
@@ -168,5 +167,3 @@ export default createStore({
   modules: {
   }
 })
-
-résoudre mon probléme de auth update en front end(fonctionne en back)

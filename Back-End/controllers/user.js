@@ -61,6 +61,8 @@ exports.signup = (req, res, next) => {
         email: req.body.email,
         // email: MaskData.maskEmail2(req.body.email, emailMask2Options),
         password: hash,
+        imageUrl: `${req.protocol}://${req.get("host")}/images/${process.env.imageUrlDefault
+          }`,
       };
       // console.log(user);
       User.create(user).then(() =>
@@ -114,7 +116,7 @@ exports.login = (req, res, next) => {
 // modifier un objet existant dans la base de donnée
 exports.updateUtilisateur = (req, res, next) => {
   const _id = req.params.id;
-  // console.log(_id);
+  console.log(_id);
   // permet de savoir si image existante ou si nouvelle
   const profilImage = req.file
     ? {
@@ -129,8 +131,8 @@ exports.updateUtilisateur = (req, res, next) => {
   )
     .then(() => res.status(200).json({ message: "Utilisateur modifié !" }))
     .catch((error) => res.status(505).json({ error }));
-  // console.log(User);
-  // console.log(profilImage);
+  console.log(User);
+  console.log(profilImage);
 };
 
 //fonction delete pour supprimer un utilisateur existants de la base de donnée
