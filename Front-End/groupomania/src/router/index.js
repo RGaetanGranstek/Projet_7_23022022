@@ -4,6 +4,7 @@ import AboutView from '../views/AboutView.vue'
 import SignupView from '../views/SignupView.vue'
 import LoginView from '../views/LoginView.vue'
 import ProfilView from '../views/ProfilView.vue'
+import wallView from '../views/wallView.vue'
 
 const routes = [
   {
@@ -32,14 +33,9 @@ const routes = [
     component: ProfilView
   },
   {
-    path: '/delete',
-    name: 'delete Profil',
-    component: ProfilView
-  },
-  {
-    path: '/update',
-    name: 'update Profil',
-    component: ProfilView
+    path: '/publication',
+    name: 'mur de l entreprise',
+    component: wallView
   }
 ]
 

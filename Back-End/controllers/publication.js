@@ -36,19 +36,28 @@ exports.deletePublication = (req, res, next) => {
   const _id = req.params.id;
   Publication.findByPk(_id)
     .then((publication) => {
-      // ont récupère le nom du fichier à supprimer
-      const filename = publication.image.split("/images/")[1];
-      // ont supprime l'objet
-      // console.log(_id);
-      // console.log(filename);
-      fs.unlink(`images/${filename}`, () => {
-        // ont renvoi une réponse si fonctionne ou non
+      if (publication.imageUrl === null) {
         Publication.destroy({
           where: { id: _id },
         })
           .then(() => res.status(200).json({ message: "Objet supprimé !" }))
           .catch((error) => res.status(400).json({ error }));
-      });
+      } else {
+        // ont récupère le nom du fichier à supprimer
+        const filename = publication.image.split("/images/")[1];
+        // ont supprime l'objet
+        // console.log(_id);
+        // console.log(filename);
+        fs.unlink(`images/${filename}`, () => {
+          // ont renvoi une réponse si fonctionne ou non
+          Publication.destroy({
+            where: { id: _id },
+          })
+            .then(() => res.status(200).json({ message: "Objet supprimé !" }))
+            .catch((error) => res.status(400).json({ error }));
+
+        })
+      }
     })
     .catch((error) => res.status(500).json({ error }));
 };

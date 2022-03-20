@@ -153,3 +153,12 @@ exports.userProfil = (req, res, next) => {
     .then((profil) => res.status(200).json(profil))
     .catch((error) => res.status(505).json({ error }));
 };
+
+// recherche d'information all utilisateur
+exports.userProfilAll = (req, res, next) => {
+  const _id = req.params.id;
+  // console.log(_id);
+  User.findAll(_id)
+    .then((profil) => res.status(200).json(profil))
+    .catch((error) => res.status(505).json({ error }));
+};

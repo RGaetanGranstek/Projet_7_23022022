@@ -5,11 +5,18 @@
         <button @click="logout()" class="button">Déconnexion</button>
       </div>
       <div>
-        <img id="imageUrl" :src="user.imageUrl" class="profilImg" />
+        <div v-if="!imageUrl">
+          <img id="imageUrl" :src="user.imageUrl" class="profilImg" />
+        </div>
+        <div v-else>
+          <img id="imageUrl" :src="imageUrl" class="profilImg" />
+        </div>
         <input
           id="newImageUrl"
           type="file"
+          @change="previewFiles"
           accept="image/png, image/jpg, image/jpeg"
+          aria-label="Choisir un fichier"
         />
         <h1 class="titleProfil">Profil de {{ user.pseudo }}</h1>
       </div>
@@ -38,12 +45,12 @@
       </div>
       <div class="buttonProfil form-column">
         <div class="left">
-          <button @click="deleteAccount()" class="button deleteAccount">
+          <button @click="confirmDeleteAccount()" class="button deleteAccount">
             Supprimer mon compte
           </button>
         </div>
         <div class="right">
-          <button @click="updateAccount()" class="button">
+          <button @click="confirmUpdateProfil()" class="button">
             Mettre à jour mon compte
           </button>
         </div>
@@ -53,6 +60,11 @@
       </div>
       <div class="form-row" v-if="status == 'error_Account_updated'">
         Quelque chose cloche
+      </div>
+      <div class="buttonProfil">
+        <router-link to="/publication"
+          >Retour sur le fil d'Actualité</router-link
+        >
       </div>
     </div>
   </div>
@@ -76,7 +88,7 @@ export default {
       nom: "",
       email: "",
       // password: "",
-      // imageUrl: "",
+      imageUrl: "",
     };
   },
   mounted() {
@@ -111,18 +123,33 @@ export default {
         }
       );
     },
+    confirmDeleteAccount() {
+      if (
+        window.confirm(
+          "Attention ! Cette opération est irreversible. Tous vos messages ainsi que les commentaires associés seront définitivement supprimés !"
+        )
+      ) {
+        this.deleteAccount();
+      }
+    },
+    confirmUpdateProfil() {
+      if (window.confirm("Souhaitez-vous validé les modifications ?")) {
+        this.updateAccount();
+      }
+    },
     updateAccount() {
-      const self = this;
+      // const self = this;
       let newPseudo = document.getElementById("pseudo").innerText;
       let newNom = document.getElementById("nom").innerText;
       let newPrenom = document.getElementById("prenom").innerText;
       let newEmail = document.getElementById("email").innerText;
-      // let newPassword = document.getElementById("password");
-      // let newImageUrl = document.getElementById("imageUrl").src;
+      // // let newPassword = document.getElementById("password");
+      // let newImageUrl = document.getElementById("imageUrl");
       // let imageUrlInput =
       //   // URL.createObjectURL(
       //   document.getElementById("newImageUrl").files[0];
       // // );
+      // let imageUrlInputUrl = URL.createObjectURL(imageUrlInput);
       if (this.pseudo !== null && this.pseudo !== "") {
         newPseudo = this.pseudo;
       }
@@ -137,12 +164,13 @@ export default {
       }
       // if (this.password !== null && this.password !== ""){newPassword = this.password;}
       // if (imageUrlInput !== null && imageUrlInput !== "") {
-      //   const formData = new FormData();
-      //   formData.append("image", imageUrlInput);
-      //   // newImageUrl = imageUrlInput;
+      // const formData = new FormData();
+      // formData.append("image", imageUrlInputUrl);
+      // newImageUrl = this.imageUrl;
       // }
       // console.log(newImageUrl);
       // console.log(imageUrlInput);
+      // console.log(imageUrlInputUrl);
       this.$store
         .dispatch("updateAccount", {
           pseudo: newPseudo,
@@ -150,12 +178,14 @@ export default {
           nom: newNom,
           email: newEmail,
           // password: this.password,
-          // imageUrl: newImageUrl,
+          // imageUrl: imageUrlInputUrl,
         })
         .then(
           function (response) {
-            self.updateImage();
-            self.$router.push("/profil");
+            // localStorage.setItem("image", response.data);
+            // console.log(response.data);
+            console.log(localStorage);
+            location.reload();
             console.log(response);
           },
           function (error) {
@@ -163,30 +193,21 @@ export default {
           }
         );
     },
-
-    updateImage() {
-      let imageUrlInput = document.getElementById("newImageUrl").files[0];
-      const formData = new FormData();
-      formData.append("image", imageUrlInput);
-      return new Promise((resolve, reject) => {
-        let user = localStorage.getItem("user");
-        let userLocal = JSON.parse(user);
-        instance
-          .put("/update/" + userLocal.userId, formData, {
-            headers: { Authorization: "Bearer " + userLocal.token },
-          })
-          .then(function (response) {
-            console.log(response);
-            resolve(response);
-          })
-          .catch(function (error) {
-            console.log(error);
-            reject(error);
-          });
-      });
+    // aperçu dynamique
+    previewFiles(event) {
+      console.log(event.target.files);
+      var files = event.target.files || event.dataTransfer.files;
+      if (!files.length) return;
+      this.createImage(files[0]);
+    },
+    createImage(file) {
+      var reader = new FileReader();
+      var self = this;
+      reader.onload = (event) => {
+        self.imageUrl = event.target.result;
+      };
+      reader.readAsDataURL(file);
     },
   },
 };
 </script>
-
-updateImage ne fonctionne pas, instance axios.

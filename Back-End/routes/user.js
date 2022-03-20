@@ -16,6 +16,8 @@ router.delete("/delete/:id", auth, multer, userCtrl.deleteUtilisateur);
 
 // Information de profil
 router.get("/profil/:id", auth, multer, userCtrl.userProfil);
+// Information de tous les profils
+router.get("/profil/", auth, multer, userCtrl.userProfilAll);
 
 // mettre à jour un compte existant dans la base de donnée
 router.put("/update/:id", auth, multer, userCtrl.updateUtilisateur);

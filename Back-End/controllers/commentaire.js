@@ -36,19 +36,28 @@ exports.deleteCommentaire = (req, res, next) => {
   const _id = req.params.id;
   Commentaire.findByPk(_id)
     .then((commentaire) => {
-      // ont récupère le nom du fichier à supprimer
-      const filename = commentaire.image.split("/images/")[1];
-      // ont supprime l'objet
-      // console.log(_id);
-      // console.log(filename);
-      fs.unlink(`images/${filename}`, () => {
-        // ont renvoi une réponse si fonctionne ou non
+      if (commentaire.imageUrl === null) {
         Commentaire.destroy({
           where: { id: _id },
         })
           .then(() => res.status(200).json({ message: "Objet supprimé !" }))
           .catch((error) => res.status(400).json({ error }));
-      });
+      } else {
+        // ont récupère le nom du fichier à supprimer
+        const filename = commentaire.image.split("/images/")[1];
+        // ont supprime l'objet
+        // console.log(_id);
+        // console.log(filename);
+        fs.unlink(`images/${filename}`, () => {
+          // ont renvoi une réponse si fonctionne ou non
+          Commentaire.destroy({
+            where: { id: _id },
+          })
+            .then(() => res.status(200).json({ message: "Objet supprimé !" }))
+            .catch((error) => res.status(400).json({ error }));
+
+        })
+      }
     })
     .catch((error) => res.status(500).json({ error }));
 };

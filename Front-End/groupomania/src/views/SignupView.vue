@@ -62,7 +62,7 @@ export default {
   },
   mounted() {
     if (this.$store.state.user.userId != -1) {
-      this.$router.push("/profil");
+      this.$router.push("/signup");
       return;
     }
   },
@@ -92,7 +92,7 @@ export default {
         })
         .then(
           function () {
-            self.$router.push("/profil");
+            self.$router.push("/publication");
           },
           function (error) {
             console.log(error);

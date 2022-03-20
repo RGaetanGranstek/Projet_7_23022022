@@ -1,0 +1,107 @@
+// Page wallView
+.display {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  @include breakpoint(laptop-desktop) {
+    flex-wrap: wrap;
+  }
+}
+.card-wall {
+  background-color: $color-secondary-transparent;
+  margin: 10px 30px;
+  border-radius: $border-radius;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+}
+.flex-item-large {
+  flex: 70%;
+  @include breakpoint(laptop-desktop) {
+    flex: 60%;
+  }
+}
+.flex-item-small {
+  flex: 20%;
+  align-self: flex-start;
+}
+.flex {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  align-items: center;
+  & > a,
+  & > button {
+    margin: 10px auto;
+  }
+}
+.link {
+  font-size: $font-P;
+  color: white;
+  &:hover {
+    color: $color-primary;
+  }
+}
+.white {
+  background-color: white;
+  border-radius: $border-radius;
+}
+.profilPublication {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.newPublication {
+  padding: 1rem;
+  &Text {
+    border-radius: 0 15px;
+    border: none;
+    margin: 1.5rem 0 0 0;
+    width: 90%;
+    min-height: 5rem;
+  }
+  &Input {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  & > div {
+    display: block;
+  }
+}
+.postImage {
+  width: 85%;
+  height: 300px;
+  margin: 1rem auto;
+  object-fit: cover;
+}
+.bottomSup {
+  padding-bottom: 130px;
+}
+.allPublication {
+  margin: 15px;
+  padding: 1.5rem;
+  display: flex !important;
+}
+.publicationMargin {
+  margin-left: 15px;
+  padding: 10px;
+  text-align: justify;
+}
+.publicationWidthButton {
+  width: 100%;
+}
+.allUtilisateursBackground {
+  background-color: $color-tertiary-light;
+  border-radius: $border-radius;
+  padding: 15px;
+}
+
+//commentaire
+.com {
+  text-align: justify;
+  margin: 10px 15px;
+  padding: 10px 15px;
+}
+.comProfil {
+  display: flex;
+  flex-direction: column;
+}
