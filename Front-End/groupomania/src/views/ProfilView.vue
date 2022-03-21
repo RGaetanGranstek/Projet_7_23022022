@@ -75,6 +75,10 @@
 // @ is an alias to /src
 import FooterSection from "@/components/Footer.vue";
 import { mapState } from "vuex";
+const axios = require("axios");
+const instance = axios.create({
+  baseURL: "http://localhost:3000/api/auth/",
+});
 
 export default {
   name: "ProfilView",
@@ -87,6 +91,7 @@ export default {
       prenom: "",
       nom: "",
       email: "",
+      image: "",
       // password: "",
       imageUrl: "",
     };
@@ -137,19 +142,37 @@ export default {
         this.updateAccount();
       }
     },
-    updateAccount() {
-      // const self = this;
-      let newPseudo = document.getElementById("pseudo").innerText;
+    async updateAccount() {
+      let user = localStorage.getItem("user");
+      let userLocal = JSON.parse(user);
+      this.image = document.getElementById("newImageUrl").files[0];
+      // this.imageUrl = URL.createObjectURL(this.image);
+      const formData = new FormData();
+      // formData.append("imageUrl", this.imageUrl);
+      formData.append("userId", userLocal.userId);
+      formData.append("image", this.image);
+      // console.log(this.imageUrl);
+      // console.log(this.image);
+      // console.log("test-récup", formData.get("imageUrl"));
+      await instance
+        .put(`/update/` + userLocal.userId, formData, {
+          headers: {
+            Authorization: "Bearer " + userLocal.token,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          this.imageUrl = response.data.imageUrl;
+          localStorage.setItem("image", response.data);
+          console.log(response.data);
+          console.log(localStorage);
+          location.reload();
+          console.log(response);
+        });
       let newNom = document.getElementById("nom").innerText;
       let newPrenom = document.getElementById("prenom").innerText;
+      let newPseudo = document.getElementById("pseudo").innerText;
       let newEmail = document.getElementById("email").innerText;
-      // // let newPassword = document.getElementById("password");
-      // let newImageUrl = document.getElementById("imageUrl");
-      // let imageUrlInput =
-      //   // URL.createObjectURL(
-      //   document.getElementById("newImageUrl").files[0];
-      // // );
-      // let imageUrlInputUrl = URL.createObjectURL(imageUrlInput);
       if (this.pseudo !== null && this.pseudo !== "") {
         newPseudo = this.pseudo;
       }
@@ -162,36 +185,21 @@ export default {
       if (this.email !== null && this.email !== "") {
         newEmail = this.email;
       }
-      // if (this.password !== null && this.password !== ""){newPassword = this.password;}
-      // if (imageUrlInput !== null && imageUrlInput !== "") {
-      // const formData = new FormData();
-      // formData.append("image", imageUrlInputUrl);
-      // newImageUrl = this.imageUrl;
-      // }
-      // console.log(newImageUrl);
-      // console.log(imageUrlInput);
-      // console.log(imageUrlInputUrl);
-      this.$store
-        .dispatch("updateAccount", {
-          pseudo: newPseudo,
-          prenom: newPrenom,
-          nom: newNom,
-          email: newEmail,
-          // password: this.password,
-          // imageUrl: imageUrlInputUrl,
-        })
-        .then(
-          function (response) {
-            // localStorage.setItem("image", response.data);
-            // console.log(response.data);
-            console.log(localStorage);
-            location.reload();
-            console.log(response);
+      const formData2 = new FormData();
+      formData2.append("nom", newNom);
+      formData2.append("prenom", newPrenom);
+      formData2.append("pseudo", newPseudo);
+      formData2.append("email", newEmail);
+      await instance
+        .put(`/update/` + userLocal.userId, formData2, {
+          headers: {
+            Authorization: "Bearer " + userLocal.token,
           },
-          function (error) {
-            console.log(error);
-          }
-        );
+        })
+        .then((response) => {
+          location.reload();
+          console.log(response);
+        });
     },
     // aperçu dynamique
     previewFiles(event) {

@@ -159,33 +159,6 @@ export default createStore({
           });
       });
     },
-    updateAccount: ({ commit }, userInfos) => {
-      return new Promise((resolve, reject) => {
-        let user = localStorage.getItem('user')
-        let userLocal = JSON.parse(user)
-        instance.put('/update/' + userLocal.userId, userInfos, { headers: { "Authorization": "Bearer " + userLocal.token } })
-          .then(function (response) {
-            commit('setStatus', 'Account_updated');
-            console.log(response);
-            resolve(response);
-          })
-          .catch(function (error) {
-            commit('setStatus', 'error_Account_updated');
-            reject(error);
-          });
-        // axios.put('http://localhost:3000/images', userInfos, { headers: { "Authorization": "Bearer " + userLocal.token } })
-        //   .then(function (response) {
-        //     commit('setStatus', 'Account_updated');
-        //     console.log(response);
-        //     resolve(response);
-        //   })
-        //   .catch(function (error) {
-        //     commit('setStatus', 'error_Account_updated');
-        //     reject(error);
-        //   });
-      }
-      )
-    },
     deleteAccount: ({ commit }) => {
       return new Promise((resolve, reject) => {
         let user = localStorage.getItem('user')

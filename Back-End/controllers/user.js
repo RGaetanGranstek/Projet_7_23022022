@@ -116,7 +116,9 @@ exports.login = (req, res, next) => {
 // modifier un objet existant dans la base de donnée
 exports.updateUtilisateur = (req, res, next) => {
   const _id = req.params.id;
-  console.log(_id);
+  // console.log(_id);
+  // console.log(req);
+  console.log(req.body.userId);
   // permet de savoir si image existante ou si nouvelle
   const profilImage = req.file
     ? {

@@ -476,8 +476,8 @@ mettre un espace en dessous des commentaires qui e nous appartiennent pas, sans 
 bouton affichage commentaires seulement present quand commentaires
 rédaction d'un commentaire avec enregistrement en bdd
 image publication et profil
-vidéo à intégré
 compte administrateur
 
 
+vidéo à intégré
 modification publication (cibler)
