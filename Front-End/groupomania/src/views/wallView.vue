@@ -104,27 +104,14 @@
                 <p v-if="!isHidden">
                   {{ publication.message }}
                 </p>
+                <img
+                  v-if="!isHidden"
+                  id="imageUrl"
+                  :src="publication.imageUrl"
+                  class="publicationImg"
+                />
               </div>
               <div class="publicationWidthButton">
-                <!-- <div v-if="!imagePreview">
-                  <img />
-                </div>
-                <div v-else>
-                  <img
-                    id="imagePreview"
-                    :src="imagePreview"
-                    class="postImage"
-                  />
-                </div>
-
-                <input
-                  v-if="user.id == publication.utilisateur_id"
-                  id="newImagePreview"
-                  type="file"
-                  @change="previewImage"
-                  accept="image/png, image/jpg, image/jpeg"
-                  aria-label="Choisir un fichier"
-                /> -->
                 <div class="form-column">
                   <div>
                     <button
@@ -143,23 +130,6 @@
                       Pour afficher les commentaires
                     </button>
                   </div>
-                  <!-- <div>
-                    <button
-                      v-if="user.id == publication.utilisateur_id"
-                      v-on:click="isHidden = !isHidden"
-                      @click.prevent="modificationPublication(publication.id)"
-                      class="button"
-                    >
-                      Pour éditer la publication
-                    </button>
-                    <button
-                      v-if="user.id == publication.utilisateur_id"
-                      @click="updatePublication(publication.id)"
-                      class="button"
-                    >
-                      Mettre à jour ma publication
-                    </button>
-                  </div> -->
                 </div>
               </div>
 
@@ -193,7 +163,7 @@
                       </div>
 
                       <input
-                        id="newImagePreview"
+                        id="newImagePreviewCommentaire"
                         type="file"
                         @change="previewImage"
                         accept="image/png, image/jpg, image/jpeg"
@@ -201,7 +171,7 @@
                       />
 
                       <button
-                        @click="createCommentaire()"
+                        @click.prevent="createCommentaire(publication.id)"
                         type="submit"
                         class="button"
                         aria-label="Publier le message"
@@ -259,6 +229,12 @@
                         <p v-if="commentaireIsHidden">
                           {{ commentaire.message }}
                         </p>
+                        <img
+                          v-if="!isHidden"
+                          id="imageUrl"
+                          :src="commentaire.imageUrl"
+                          class="publicationImg"
+                        />
                       </div>
                       <div
                         class="commentaireWidthButton publicationWidthButton"
@@ -364,25 +340,31 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-    createPublication() {
+    async createPublication() {
       let user = localStorage.getItem("user");
       let userLocal = JSON.parse(user);
-      this.$store
-        .dispatch("createPublication", {
-          titre: this.titre,
-          message: this.message,
-          utilisateur_id: userLocal.userId,
-          imageUrl: this.imageUrl,
-        })
-        .then(
-          function (response) {
-            location.reload();
-            console.log(response);
+      this.image = document.getElementById("newImagePreview").files[0];
+      const formData = new FormData();
+      formData.append("userId", userLocal.userId);
+      formData.append("image", this.image);
+      formData.append("titre", this.titre);
+      formData.append("message", this.message);
+      formData.append("utilisateur_id", userLocal.userId);
+      // console.log(this.image);
+      await instancePost
+        .post("/publication/", formData, {
+          headers: {
+            Authorization: "Bearer " + userLocal.token,
+            "Content-Type": "multipart/form-data",
           },
-          function (error) {
-            console.log(error);
-          }
-        );
+        })
+        .then((response) => {
+          location.reload();
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     async deletePublication(id) {
       let confirmDeletePublication = confirm(
@@ -405,51 +387,38 @@ export default {
         return;
       }
     },
-    // modificationPublication() {},
-    // async updatePublication(id) {
-    //   let confirmUpdatePublication = confirm(
-    //     "Souhaitez-vous validé les modifications ?"
-    //   );
-    //   // console.log(id);
-    //   if (confirmUpdatePublication == true) {
-    //     let user = localStorage.getItem("user");
-    //     let userLocal = JSON.parse(user);
-    //     await instancePost
-    //       .put(`/publication/${id}`, {
-    //         headers: {
-    //           Authorization: "Bearer " + userLocal.token,
-    //         },
-    //       })
-    //       .then(() => {
-    //         location.reload();
-    //       });
-    //   } else {
-    //     return;
-    //   }
-    // },
-    createCommentaire(id) {
+    async createCommentaire(id) {
       let user = localStorage.getItem("user");
       let userLocal = JSON.parse(user);
-      this.$store
-        .dispatch("createCommentaire", {
-          message: this.commentaireMessage,
-          utilisateur_id: userLocal.userId,
-          publication_id: id,
-          imageUrl: this.imageUrl,
-        })
-        .then(
-          function (response) {
-            location.reload();
-            console.log(response);
+      this.image = document.getElementById(
+        "newImagePreviewCommentaire"
+      ).files[0];
+      const formData = new FormData();
+      formData.append("userId", userLocal.userId);
+      formData.append("image", this.image);
+      formData.append("message", this.commentaireMessage);
+      formData.append("utilisateur_id", userLocal.userId);
+      formData.append("publication_id", id);
+      // console.log(id);
+      // console.log(this.image);
+      await instancePost
+        .post("/commentaire/", formData, {
+          headers: {
+            Authorization: "Bearer " + userLocal.token,
+            "Content-Type": "multipart/form-data",
           },
-          function (error) {
-            console.log(error);
-          }
-        );
+        })
+        .then((response) => {
+          location.reload();
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     async deleteCommentaire(id) {
       let confirmDeleteCommentaire = confirm(
-        "Attention ! Votre message ainsi que les commentaires associés seront définitivement supprimés !"
+        "Attention ! Votre commentaire sera définitivement supprimé !"
       );
       // console.log(id);
       if (confirmDeleteCommentaire == true) {
@@ -472,12 +441,22 @@ export default {
 };
 </script>
 
-mettre un espace en dessous des commentaires qui e nous appartiennent pas, sans bouton supprimer le message
+
+
+mettre un espace en dessous des commentaires qui ne nous appartiennent pas
 bouton affichage commentaires seulement present quand commentaires
-rédaction d'un commentaire avec enregistrement en bdd
-image publication et profil
-compte administrateur
+bouton affichage commentaire qui doit afficher que dans la publication ou il se situe
+input selection d'image qui doit s'afficher que dans l'input concerné
+
+affichage image quand null ou "" à cacher dans publication et commentaire
+pattern contrôle modification info profil
 
 
-vidéo à intégré
-modification publication (cibler)
+compte administrateur =>
+
+"nom": "Groupomania",
+"prenom": "Communication",
+"pseudo": "Modérateur(trice)",
+"email": "Contact@Groupomania.fr",
+"password": "Groupomania!00",
+"role": "ADMIN"

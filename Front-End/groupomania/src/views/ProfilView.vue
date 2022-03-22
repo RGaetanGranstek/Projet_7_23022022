@@ -18,21 +18,20 @@
           accept="image/png, image/jpg, image/jpeg"
           aria-label="Choisir un fichier"
         />
-        <h1 class="titleProfil">Profil de {{ user.pseudo }}</h1>
       </div>
-      <div class="form-column">
-        <p id="pseudo">{{ user.pseudo }}</p>
+      <div>
+        <h1 class="titleProfil">Profil de {{ user.pseudo }}</h1>
         <input v-model="pseudo" type="text" placeholder="pseudo" />
       </div>
-      <div class="form-column">
+      <div>
         <p id="prenom">{{ user.prenom }}</p>
         <input v-model="prenom" type="text" placeholder="Prénom" />
       </div>
-      <div class="form-column">
+      <div>
         <p id="nom">{{ user.nom }}</p>
         <input v-model="nom" type="text" placeholder="Nom" />
       </div>
-      <div class="form-column">
+      <div>
         <p id="email">{{ user.email }}</p>
         <input v-model="email" type="text" placeholder="Adresse mail" />
       </div>

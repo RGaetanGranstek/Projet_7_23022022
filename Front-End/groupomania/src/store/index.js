@@ -179,25 +179,25 @@ export default createStore({
     },
     // paramétre wallView
     // Permet de créé une publication
-    createPublication: ({ commit }, publicationInfos) => {
-      let user = localStorage.getItem("user");
-      let userLocal = JSON.parse(user);
-      instancePost
-        .post("/publication/", publicationInfos, {
-          headers: { Authorization: "Bearer " + userLocal.token },
-        })
-        .then(
-          function (response) {
-            commit('setStatus', 'Publication_created');
-            self.$router.push("/publication");
-            console.log(response);
-          },
-          function (error) {
-            commit('setStatus', 'Error_Publication_created');
-            console.log(error);
-          }
-        );
-    },
+    // createPublication: ({ commit }, publicationInfos) => {
+    //   let user = localStorage.getItem("user");
+    //   let userLocal = JSON.parse(user);
+    //   instancePost
+    //     .post("/publication/", publicationInfos, {
+    //       headers: { Authorization: "Bearer " + userLocal.token },
+    //     })
+    //     .then(
+    //       function (response) {
+    //         commit('setStatus', 'Publication_created');
+    //         self.$router.push("/publication");
+    //         console.log(response);
+    //       },
+    //       function (error) {
+    //         commit('setStatus', 'Error_Publication_created');
+    //         console.log(error);
+    //       }
+    //     );
+    // },
     // récupère toutes les publications
     allPublications({ commit }) {
       let user = localStorage.getItem("user");

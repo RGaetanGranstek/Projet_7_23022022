@@ -73,6 +73,13 @@
   margin: 1rem auto;
   object-fit: cover;
 }
+.publicationImg {
+  width: 100%;
+  height: 300px;
+  margin: auto;
+  object-fit: cover;
+  border-radius: $border-radius;
+}
 .bottomSup {
   padding-bottom: 130px;
 }

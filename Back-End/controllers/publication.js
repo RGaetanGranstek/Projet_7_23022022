@@ -7,13 +7,17 @@ const fs = require("fs");
 
 // Pour la création d'objet
 exports.createPublication = (req, res, next) => {
+  let newImageUrl = "";
+  if (req.file) { newImageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}` };
+  // console.log(req);
+  // console.log(req.file);
   const publication = {
-    utilisateur_id: req.body.utilisateur_id,
+    utilisateur_id: req.body.userId,
     titre: req.body.titre,
     message: req.body.message,
-    imageUrl: req.body.imageURL,
-    // imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+    imageUrl: newImageUrl,
   };
+  console.log(publication)
   // save dans la base de donnée
   Publication.create(publication)
     .then(() => res.status(201).json({ message: "Publication créé !" }))
@@ -23,9 +27,21 @@ exports.createPublication = (req, res, next) => {
 // modifier un objet existant dans la base de donnée
 exports.modifyPublication = (req, res, next) => {
   const _id = req.params.id;
-  Publication.update(req.body, {
-    where: { id: _id },
-  })
+  // console.log(_id);
+  // console.log(req);
+  console.log(req.body.userId);
+  // permet de savoir si image existante ou si nouvelle
+  const publicationImage = req.file
+    ? {
+      ...JSON.parse(req.body.userId),
+      // ont génére une URL de l'image
+      imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename
+        }`,
+    }
+    : { ...req.body }; // si il n'existe pas on fait une copie de req.body
+  Publication.update(
+    { ...publicationImage }, { where: { id: _id } }
+  )
     .then(() => res.status(200).json({ message: "Objet modifié !" }))
     .catch((error) => res.status(400).json({ error }));
 };
@@ -44,7 +60,7 @@ exports.deletePublication = (req, res, next) => {
           .catch((error) => res.status(400).json({ error }));
       } else {
         // ont récupère le nom du fichier à supprimer
-        const filename = publication.image.split("/images/")[1];
+        const filename = publication.imageUrl.split("/images/")[1];
         // ont supprime l'objet
         // console.log(_id);
         // console.log(filename);
@@ -59,7 +75,7 @@ exports.deletePublication = (req, res, next) => {
         })
       }
     })
-    .catch((error) => res.status(500).json({ error }));
+  // .catch((error) => res.status(500).json({ error }));
 };
 
 // :id <= parti de la route dynamique pour une recherche à l'unité dans la base de donnée
