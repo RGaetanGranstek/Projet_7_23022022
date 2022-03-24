@@ -8,6 +8,8 @@ const jwt = require("jsonwebtoken");
 const MaskData = require("maskdata");
 // mise en place d'un validateur de mot de passe + complexe
 const passwordValidator = require("password-validator");
+// importation de fs de node pour file system pour avoir accés aux différentes opérations du système de fichier
+const fs = require("fs");
 
 // Création d'un schema pour le mot de passe
 const schema = new passwordValidator();
@@ -127,7 +129,7 @@ exports.updateUtilisateur = (req, res, next) => {
       imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename
         }`,
     }
-    : { ...req.body }; // si il n'existe pas on fait une copie de req.body
+    : { ...req.body }; // si il n'existe pas on fait une copie de req.body}
   User.update(
     { ...profilImage }, { where: { id: _id } }
   )
@@ -140,11 +142,31 @@ exports.updateUtilisateur = (req, res, next) => {
 //fonction delete pour supprimer un utilisateur existants de la base de donnée
 exports.deleteUtilisateur = (req, res, next) => {
   const _id = req.params.id;
-  User.destroy({
-    where: { id: _id },
-  })
-    .then(() => res.status(200).json({ message: "Utilisateur supprimé !" }))
-    .catch((error) => res.status(400).json({ error }));
+  User.findByPk(_id)
+    .then((utilisateur) => {
+      if (utilisateur.imageUrl === null) {
+        User.destroy({
+          where: { id: _id },
+        })
+          .then(() => res.status(200).json({ message: "Utilisateur supprimé !" }))
+          .catch((error) => res.status(400).json({ error }));
+      } else {
+        // ont récupère le nom du fichier à supprimer
+        const filename = utilisateur.imageUrl.split("/images/")[1];
+        // ont supprime l'objet
+        // console.log(_id);
+        // console.log(filename);
+        fs.unlink(`images/${filename}`, () => {
+          // ont renvoi une réponse si fonctionne ou non
+          User.destroy({
+            where: { id: _id },
+          })
+            .then(() => res.status(200).json({ message: "Utilisateur supprimé !" }))
+            .catch((error) => res.status(400).json({ error }));
+
+        })
+      }
+    })
 };
 
 // recherche d'information utilisateur

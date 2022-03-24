@@ -87,10 +87,18 @@ exports.getOneCommentaire = (req, res, next) => {
     .catch((error) => res.status(500).json({ error }));
 };
 
-exports.getAllCommentaire = (req, res, next) => {
-  const _id = req.params.id;
+exports.getCommentaireUtilisateur = (req, res, next) => {
   // findByPk pour trouver tous les objets
-  Commentaire.findAll(_id)
+  console.log(req.params)
+  Commentaire.findAll({ where: { publication_id: req.params.id } })
+    // récupération du tableau de tous les publications, et ont renvoi le tableau reçu par le Back-End (base de donnée)
+    .then((publicationUtilisateur) => res.status(200).json(publicationUtilisateur))
+    .catch((error) => res.status(500).json({ error }));
+};
+
+exports.getAllCommentaire = (req, res, next) => {
+  // findByPk pour trouver tous les objets
+  Commentaire.findAll()
     // récupération du tableau de tous les commentaires, et ont renvoi le tableau reçu par le Back-End (base de donnée)
     .then((commentaires) => res.status(200).json(commentaires))
     .catch((error) => res.status(500).json({ error }));

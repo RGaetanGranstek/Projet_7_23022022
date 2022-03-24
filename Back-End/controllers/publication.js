@@ -82,15 +82,16 @@ exports.deletePublication = (req, res, next) => {
 exports.getOnePublication = (req, res, next) => {
   const _id = req.params.id;
   // findByPk pour trouver qu'un seul objet
+  console.log(req.params)
+  console.log(_id)
   Publication.findByPk(_id)
     .then((publication) => res.status(200).json(publication))
     .catch((error) => res.status(500).json({ error }));
 };
 
 exports.getAllPublication = (req, res, next) => {
-  const _id = req.params.id;
   // findByPk pour trouver tous les objets
-  Publication.findAll(_id)
+  Publication.findAll()
     // récupération du tableau de tous les publications, et ont renvoi le tableau reçu par le Back-End (base de donnée)
     .then((publications) => res.status(200).json(publications))
     .catch((error) => res.status(500).json({ error }));

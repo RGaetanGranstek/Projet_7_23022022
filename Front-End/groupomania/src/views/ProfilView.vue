@@ -21,19 +21,19 @@
       </div>
       <div>
         <h1 class="titleProfil">Profil de {{ user.pseudo }}</h1>
-        <input v-model="pseudo" type="text" placeholder="pseudo" />
+        <!-- <input v-model="pseudo" type="text" placeholder="pseudo" /> -->
       </div>
       <div>
         <p id="prenom">{{ user.prenom }}</p>
-        <input v-model="prenom" type="text" placeholder="Prénom" />
+        <!-- <input v-model="prenom" type="text" placeholder="Prénom" /> -->
       </div>
       <div>
         <p id="nom">{{ user.nom }}</p>
-        <input v-model="nom" type="text" placeholder="Nom" />
+        <!-- <input v-model="nom" type="text" placeholder="Nom" /> -->
       </div>
       <div>
         <p id="email">{{ user.email }}</p>
-        <input v-model="email" type="text" placeholder="Adresse mail" />
+        <!-- <input v-model="email" type="text" placeholder="Adresse mail" /> -->
       </div>
       <!-- <div class="form-column">
         <p></p>
@@ -49,7 +49,7 @@
           </button>
         </div>
         <div class="right">
-          <button @click="confirmUpdateProfil()" class="button">
+          <button @click.prevent="confirmUpdateProfil()" class="button">
             Mettre à jour mon compte
           </button>
         </div>
@@ -141,20 +141,35 @@ export default {
         this.updateAccount();
       }
     },
-    async updateAccount() {
+    updateAccount() {
       let user = localStorage.getItem("user");
       let userLocal = JSON.parse(user);
+      // let newNom = document.getElementById("nom").innerText;
+      // let newPrenom = document.getElementById("prenom").innerText;
+      // let newPseudo = document.getElementById("pseudo").innerText;
+      // let newEmail = document.getElementById("email").innerText;
+      // if (this.pseudo !== null && this.pseudo !== "") {
+      //   newPseudo = this.pseudo;
+      // }
+      // if (this.prenom !== null && this.prenom !== "") {
+      //   newPrenom = this.prenom;
+      // }
+      // if (this.nom !== null && this.nom !== "") {
+      //   newNom = this.nom;
+      // }
+      // if (this.email !== null && this.email !== "") {
+      //   newEmail = this.email;
+      // }
       this.image = document.getElementById("newImageUrl").files[0];
-      // this.imageUrl = URL.createObjectURL(this.image);
       const formData = new FormData();
-      // formData.append("imageUrl", this.imageUrl);
       formData.append("userId", userLocal.userId);
       formData.append("image", this.image);
-      // console.log(this.imageUrl);
-      // console.log(this.image);
-      // console.log("test-récup", formData.get("imageUrl"));
-      await instance
-        .put(`/update/` + userLocal.userId, formData, {
+      // formData.append("nom", newNom);
+      // formData.append("prenom", newPrenom);
+      // formData.append("pseudo", newPseudo);
+      // formData.append("email", newEmail);
+      instance
+        .put("/update/" + userLocal.userId, formData, {
           headers: {
             Authorization: "Bearer " + userLocal.token,
             "Content-Type": "multipart/form-data",
@@ -165,37 +180,6 @@ export default {
           localStorage.setItem("image", response.data);
           console.log(response.data);
           console.log(localStorage);
-          location.reload();
-          console.log(response);
-        });
-      let newNom = document.getElementById("nom").innerText;
-      let newPrenom = document.getElementById("prenom").innerText;
-      let newPseudo = document.getElementById("pseudo").innerText;
-      let newEmail = document.getElementById("email").innerText;
-      if (this.pseudo !== null && this.pseudo !== "") {
-        newPseudo = this.pseudo;
-      }
-      if (this.prenom !== null && this.prenom !== "") {
-        newPrenom = this.prenom;
-      }
-      if (this.nom !== null && this.nom !== "") {
-        newNom = this.nom;
-      }
-      if (this.email !== null && this.email !== "") {
-        newEmail = this.email;
-      }
-      const formData2 = new FormData();
-      formData2.append("nom", newNom);
-      formData2.append("prenom", newPrenom);
-      formData2.append("pseudo", newPseudo);
-      formData2.append("email", newEmail);
-      await instance
-        .put(`/update/` + userLocal.userId, formData2, {
-          headers: {
-            Authorization: "Bearer " + userLocal.token,
-          },
-        })
-        .then((response) => {
           location.reload();
           console.log(response);
         });

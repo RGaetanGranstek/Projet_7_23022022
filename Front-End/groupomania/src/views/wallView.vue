@@ -58,12 +58,12 @@
           <!-- On récupére les publications des plus récentes aux plus anciennes -->
           <div
             :key="publication.id"
-            v-for="publication in allPublications.slice().reverse()"
+            v-for="publication in publications.slice().reverse()"
           >
             <!-- On récupére les utilisateurs correspondant aux publications -->
             <div
               class="allPublication card-wall flex-item-large display"
-              v-for="utilisateur in allUtilisateurs.filter((utilisateur) => {
+              v-for="utilisateur in utilisateurs.filter((utilisateur) => {
                 return utilisateur.id == publication.utilisateur_id;
               })"
               :key="utilisateur.id"
@@ -120,14 +120,6 @@
                       class="button deleteAccount"
                     >
                       Supprimer ma publication
-                    </button>
-                  </div>
-                  <div>
-                    <button
-                      v-on:click="commentaireIsHidden = !commentaireIsHidden"
-                      class="button"
-                    >
-                      Pour afficher les commentaires
                     </button>
                   </div>
                 </div>
@@ -187,27 +179,41 @@
               <div class="publicationWidthButton">
                 <!-- on trie les commentaires en fonction de la publication -->
                 <div
-                  v-for="commentaire in allCommentaires.filter(
-                    (commentaire) => {
-                      return commentaire.publication_id == publication.id;
-                    }
-                  )"
+                  v-for="commentaire in commentaires.filter((commentaire) => {
+                    return commentaire.publication_id == publication.id;
+                  })"
                   :key="commentaire.publication_id"
                 >
+                  <div v-if="commentaire.length !== 0">
+                    <button
+                      v-on:click="
+                        commentaireVisibility = commentaireVisibilityArray(
+                          commentaire.publication_id,
+                          commentaireVisibility
+                        )
+                      "
+                      class="button"
+                      :id="commentaire.publication_id"
+                    >
+                      Pour afficher les commentaires
+                    </button>
+                  </div>
                   <!-- On récupére les utilisateurs correspondant aux commentaires -->
                   <div
                     class="allCommentaire card-wall flex-item-large"
-                    v-for="utilisateur in allUtilisateurs.filter(
-                      (utilisateur) => {
-                        return utilisateur.id == commentaire.utilisateur_id;
-                      }
-                    )"
+                    v-for="utilisateur in utilisateurs.filter((utilisateur) => {
+                      return utilisateur.id == commentaire.utilisateur_id;
+                    })"
                     :key="utilisateur.id"
                   >
                     <!-- afficher tous les commentaires -->
                     <div class="profilCommentaire">
                       <div
-                        v-if="commentaireIsHidden"
+                        v-if="
+                          commentaireVisibility.includes(
+                            commentaire.publication_id
+                          )
+                        "
                         class="profilCommentaire com"
                       >
                         <img
@@ -220,13 +226,29 @@
                         >
                       </div>
                       <div
-                        v-if="commentaireIsHidden"
+                        v-if="
+                          commentaireVisibility.includes(
+                            commentaire.publication_id
+                          )
+                        "
                         class="white commentaireMargin com"
                       >
-                        <p v-if="commentaireIsHidden">
+                        <p
+                          v-if="
+                            commentaireVisibility.includes(
+                              commentaire.publication_id
+                            )
+                          "
+                        >
                           {{ commentaire.id }}
                         </p>
-                        <p v-if="commentaireIsHidden">
+                        <p
+                          v-if="
+                            commentaireVisibility.includes(
+                              commentaire.publication_id
+                            )
+                          "
+                        >
                           {{ commentaire.message }}
                         </p>
                         <img
@@ -243,7 +265,8 @@
                           <div>
                             <button
                               v-if="
-                                commentaireIsHidden &&
+                                commentaireVisibility ==
+                                  commentaire.publication_id &&
                                 user.id == commentaire.utilisateur_id
                               "
                               @click.prevent="deleteCommentaire(commentaire.id)"
@@ -279,6 +302,9 @@
 import FooterSection from "@/components/Footer.vue";
 import { mapState } from "vuex";
 const axios = require("axios");
+const instance = axios.create({
+  baseURL: "http://localhost:3000/api/auth/",
+});
 const instancePost = axios.create({
   baseURL: "http://localhost:3000/api/",
 });
@@ -295,9 +321,62 @@ export default {
       imageUrl: "",
       imagePreview: "",
       isHidden: false,
-      commentaireIsHidden: false,
+      publication: {},
+      commentaire: {},
+      publications: [],
+      commentaires: [],
+      commentaireVisibility: [],
       commentaireMessage: "",
     };
+  },
+  async created() {
+    let user = localStorage.getItem("user");
+    let userLocal = JSON.parse(user);
+    await instance
+      .get("/profil/", {
+        headers: {
+          Authorization: "Bearer " + userLocal.token,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        this.utilisateurs = response.data;
+        console.log(this.utilisateurs);
+      })
+      .catch(function (error) {
+        alert(error);
+        console.log(error);
+      });
+    await instancePost
+      .get("/publication/", {
+        headers: {
+          Authorization: "Bearer " + userLocal.token,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        this.publications = response.data;
+        console.log(this.publications);
+      })
+      .catch(function (error) {
+        alert(error);
+        console.log(error);
+      });
+    await instancePost
+      .get("/commentaire/", {
+        headers: {
+          Authorization: "Bearer " + userLocal.token,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        this.commentaires = response.data;
+        console.log(this.commentaires);
+      })
+      .catch(function (error) {
+        alert(error);
+        console.log(error);
+      });
   },
   mounted() {
     console.log(this.$store.state);
@@ -307,20 +386,23 @@ export default {
       return;
     }
     this.$store.dispatch("userProfil");
-    this.$store.dispatch("allPublications");
-    this.$store.dispatch("allUtilisateurs");
-    this.$store.dispatch("allCommentaires");
   },
   computed: {
     ...mapState({
       user: "userInfos",
-      allPublications: "publications",
-      allUtilisateurs: "utilisateurs",
-      allCommentaires: "commentaires",
     }),
     ...mapState(["status"]),
   },
   methods: {
+    commentaireVisibilityArray: (id, array) => {
+      if (array.includes(id)) {
+        array.pop(id);
+      } else {
+        array.push(id);
+      }
+      // console.log(typeof id);
+      return array;
+    },
     logout() {
       this.$store.commit("logout");
       this.$router.push("/");
@@ -443,13 +525,12 @@ export default {
 
 
 
-mettre un espace en dessous des commentaires qui ne nous appartiennent pas
 bouton affichage commentaires seulement present quand commentaires
-bouton affichage commentaire qui doit afficher que dans la publication ou il se situe
 input selection d'image qui doit s'afficher que dans l'input concerné
 
 affichage image quand null ou "" à cacher dans publication et commentaire
 pattern contrôle modification info profil
+mise en place des droits ADMIN
 
 
 compte administrateur =>
