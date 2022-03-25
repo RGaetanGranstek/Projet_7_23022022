@@ -11,13 +11,13 @@ const User = sequelize.define(
     pseudo: { type: Sequelize.STRING, allowNull: false, unique: true },
     email: { type: Sequelize.STRING, allowNull: false, unique: true },
     password: { type: Sequelize.STRING, allowNull: false },
+    imageUrl: {
+      type: Sequelize.STRING,
+    },
     role: {
       type: Sequelize.STRING,
       allowNull: false,
       defaultValue: "UTILISATEUR",
-    },
-    imageUrl: {
-      type: Sequelize.STRING,
     },
   },
   {

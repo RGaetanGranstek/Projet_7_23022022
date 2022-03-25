@@ -16,18 +16,6 @@ const helmet = require("helmet");
 //création d'une constante pour l'application
 const app = express();
 
-// Connexion à la base de donnée MySQL
-const { sequelize } = require("./config/sequelize");
-// console.log(sequelize);
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Connection établi avec succés.");
-  })
-  .catch((err) => {
-    console.error("Impossible de se connecter à la BDD:", err);
-  });
-
 // Ces headers permettent :
 // - d'accéder à notre API depuis n'importe quelle origine ( '*' ) ;
 // - d'ajouter les headers mentionnés aux requêtes envoyées vers notre API (Origin , X-Requested-With , etc.) ;

@@ -6,11 +6,11 @@ const publication = sequelize.define(
   "publication",
   {
     id: { type: Sequelize.BIGINT, primaryKey: true, autoIncrement: true },
-    utilisateur_id: { type: Sequelize.STRING, allowNull: false },
     titre: { type: Sequelize.STRING, allowNull: false },
-    message: { type: Sequelize.STRING, allowNull: false },
+    message: { type: Sequelize.TEXT, allowNull: false },
+    utilisateur_id: { type: Sequelize.BIGINT, allowNull: false, references: { model: "utilisateur", key: "id" } },
     imageUrl: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT,
     },
   },
   {

@@ -1,5 +1,13 @@
+let db = require("../models")
+const Publication = db.Publication
+const Commentaire = db.Commentaire
+const User = db.User
 // importation du model
-const Publication = require("../models/publication");
+// const Publication = require("../models/publication");
+// model user
+// const User = require("../models/user");
+// sequelize
+// const sequelize = require("../config/sequelize")
 // importation de fs de node pour file system pour avoir accés aux différentes opérations du système de fichier
 const fs = require("fs");
 
@@ -81,17 +89,29 @@ exports.deletePublication = (req, res, next) => {
 // :id <= parti de la route dynamique pour une recherche à l'unité dans la base de donnée
 exports.getOnePublication = (req, res, next) => {
   const _id = req.params.id;
-  // findByPk pour trouver qu'un seul objet
-  console.log(req.params)
-  console.log(_id)
-  Publication.findByPk(_id)
+  // findOne pour trouver qu'un seul objet
+  // console.log(req.params)
+  // console.log(_id)
+  Publication.findOne({
+    where: {
+      //Cible l'id de l'objet à afficher
+      id: _id,
+    },
+    include: [
+      { model: User, required: true },
+      { model: Commentaire, required: true }]
+  })
     .then((publication) => res.status(200).json(publication))
     .catch((error) => res.status(500).json({ error }));
 };
 
 exports.getAllPublication = (req, res, next) => {
   // findByPk pour trouver tous les objets
-  Publication.findAll()
+  Publication.findAll({
+    include: [
+      { model: User, required: true },
+      { model: Commentaire, required: true }]
+  })
     // récupération du tableau de tous les publications, et ont renvoi le tableau reçu par le Back-End (base de donnée)
     .then((publications) => res.status(200).json(publications))
     .catch((error) => res.status(500).json({ error }));

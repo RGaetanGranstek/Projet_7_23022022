@@ -115,6 +115,17 @@ export default {
       this.$store.commit("logout");
       this.$router.push("/");
     },
+    admin() {
+      let user = localStorage.getItem("user");
+      let userLocal = JSON.parse(user);
+      if (userLocal.role === "ADMIN") {
+        console.log(userLocal.role);
+        return true;
+      } else {
+        console.log(userLocal.role);
+        return false;
+      }
+    },
     deleteAccount() {
       const self = this;
       this.$store.dispatch("deleteAccount").then(

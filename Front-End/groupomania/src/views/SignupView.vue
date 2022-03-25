@@ -81,6 +81,11 @@ export default {
       }
     },
     ...mapState(["status"]),
+    ...mapState(["nomValidInput"]),
+    ...mapState(["prenomValidInput"]),
+    ...mapState(["pseudoValidInput"]),
+    ...mapState(["emailValidInput"]),
+    ...mapState(["nomValidInput"]),
   },
   methods: {
     login() {

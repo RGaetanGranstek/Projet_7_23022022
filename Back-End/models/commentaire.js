@@ -6,11 +6,11 @@ const commentaire = sequelize.define(
   "commentaire",
   {
     id: { type: Sequelize.BIGINT, primaryKey: true, autoIncrement: true },
-    message: { type: Sequelize.STRING, allowNull: false },
-    utilisateur_id: { type: Sequelize.STRING, allowNull: false },
-    publication_id: { type: Sequelize.STRING, allowNull: false },
+    message: { type: Sequelize.TEXT, allowNull: false },
+    publication_id: { type: Sequelize.BIGINT, allowNull: false, references: { model: "publication", key: "id" } },
+    utilisateur_id: { type: Sequelize.BIGINT, allowNull: false, references: { model: "utilisateur", key: "id" } },
     imageUrl: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT,
     },
   },
   {

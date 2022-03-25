@@ -21,7 +21,7 @@ router.delete("/:id", auth, commentaireControllers.deleteCommentaire);
 
 // :id <= parti de la route dynamique pour une recherche à l'unité dans la base de donnée
 router.get("/:id", auth, commentaireControllers.getOneCommentaire);
-router.get("/publicationId/:id", auth, commentaireControllers.getCommentaireUtilisateur)
+
 // pour trouver tous les objets
 router.get("/", auth, commentaireControllers.getAllCommentaire);
 

@@ -38,6 +38,70 @@ export default createStore({
       role: '',
       imageUrl: '',
     },
+    nomValidInput() {
+      const nomValidRegex = /^[^=*'<>{}0-9]{3,}$/;
+      var nomValid = document.getElementById("nom").value;
+      var nomValidResult = nomValidRegex.test(nomValid);
+      if (nomValidResult == true) {
+        document.getElementById("validName").style.visibility = "visible";
+        document.getElementById("wrongName").style.visibility = "hidden";
+        document.getElementById("validName").style.color = "green";
+        return true;
+      } else {
+        document.getElementById("validName").style.visibility = "hidden";
+        document.getElementById("wrongName").style.visibility = "visible";
+        document.getElementById("wrongName").style.color = "red";
+        return false;
+      }
+    },
+    prenomValidInput() {
+      const prenomValidRegex = /^[^=*'<>{}0-9]{3,}$/;
+      var prenomValid = document.getElementById("prenom").value;
+      var prenomValidResult = prenomValidRegex.test(prenomValid);
+      if (prenomValidResult == true) {
+        document.getElementById("validName").style.visibility = "visible";
+        document.getElementById("wrongName").style.visibility = "hidden";
+        document.getElementById("validName").style.color = "green";
+        return true;
+      } else {
+        document.getElementById("validName").style.visibility = "hidden";
+        document.getElementById("wrongName").style.visibility = "visible";
+        document.getElementById("wrongName").style.color = "red";
+        return false;
+      }
+    },
+    pseudoValidInput() {
+      const pseudoValidRegex = /^[^=*'<>{}0-9]{3,}$/;
+      var pseudoValid = document.getElementById("pseudo").value;
+      var pseudoValidResult = pseudoValidRegex.test(pseudoValid);
+      if (pseudoValidResult == true) {
+        document.getElementById("validName").style.visibility = "visible";
+        document.getElementById("wrongName").style.visibility = "hidden";
+        document.getElementById("validName").style.color = "green";
+        return true;
+      } else {
+        document.getElementById("validName").style.visibility = "hidden";
+        document.getElementById("wrongName").style.visibility = "visible";
+        document.getElementById("wrongName").style.color = "red";
+        return false;
+      }
+    },
+    emailValidInput() {
+      const mailRegex = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/;
+      var email = document.getElementById('email').value;
+      var emailResult = mailRegex.test(email);
+      if (emailResult == true) {
+        document.getElementById("validMail").style.visibility = "visible";
+        document.getElementById("wrongMail").style.visibility = "hidden";
+        document.getElementById("validMail").style.color = "green";
+        return true;
+      } else {
+        document.getElementById("validMail").style.visibility = "hidden";
+        document.getElementById("wrongMail").style.visibility = "visible";
+        document.getElementById("wrongMail").style.color = "red";
+        return false;
+      }
+    },
   },
   // propriété calculées => propriété d'état du magasin
   getters: {

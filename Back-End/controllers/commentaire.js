@@ -1,5 +1,11 @@
+let db = require("../models")
+const Publication = db.Publication
+const Commentaire = db.Commentaire
+const User = db.User
 // importation du model
-const Commentaire = require("../models/commentaire");
+// const Commentaire = require("../models/commentaire");
+// sequelize
+// const sequelize = require("../config/sequelize")
 // importation de fs de node pour file system pour avoir accés aux différentes opérations du système de fichier
 const fs = require("fs");
 
@@ -81,24 +87,26 @@ exports.deleteCommentaire = (req, res, next) => {
 // :id <= parti de la route dynamique pour une recherche à l'unité dans la base de donnée
 exports.getOneCommentaire = (req, res, next) => {
   const _id = req.params.id;
-  // findByPk pour trouver qu'un seul objet
-  Commentaire.findByPk(_id)
+  // findOne pour trouver qu'un seul objet
+  Commentaire.findOne({
+    where: {
+      //Cible l'id de l'objet à afficher
+      id: _id,
+    }, include: [
+      { model: Publication, required: true },
+      { model: User, required: true }]
+  })
     .then((commentaire) => res.status(200).json(commentaire))
-    .catch((error) => res.status(500).json({ error }));
-};
-
-exports.getCommentaireUtilisateur = (req, res, next) => {
-  // findByPk pour trouver tous les objets
-  console.log(req.params)
-  Commentaire.findAll({ where: { publication_id: req.params.id } })
-    // récupération du tableau de tous les publications, et ont renvoi le tableau reçu par le Back-End (base de donnée)
-    .then((publicationUtilisateur) => res.status(200).json(publicationUtilisateur))
     .catch((error) => res.status(500).json({ error }));
 };
 
 exports.getAllCommentaire = (req, res, next) => {
   // findByPk pour trouver tous les objets
-  Commentaire.findAll()
+  Commentaire.findAll({
+    include: [
+      { model: Publication, required: true },
+      { model: User, required: true }]
+  })
     // récupération du tableau de tous les commentaires, et ont renvoi le tableau reçu par le Back-End (base de donnée)
     .then((commentaires) => res.status(200).json(commentaires))
     .catch((error) => res.status(500).json({ error }));

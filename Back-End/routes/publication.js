@@ -21,6 +21,7 @@ router.delete("/:id", auth, publicationControllers.deletePublication);
 
 // :id <= parti de la route dynamique pour une recherche à l'unité dans la base de donnée
 router.get("/:id", auth, publicationControllers.getOnePublication);
+
 // pour trouver tous les objets
 router.get("/", auth, publicationControllers.getAllPublication);
 

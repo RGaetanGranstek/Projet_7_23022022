@@ -1,5 +1,9 @@
+let db = require("../models")
+const Publication = db.Publication
+const Commentaire = db.Commentaire
+const User = db.User
 // model user
-const User = require("../models/user");
+// const User = require("../models/user");
 // package cryptage des mots de passe (hashage)
 const bcrypt = require("bcrypt");
 // création de token et permet aussi de les vérifier
@@ -100,6 +104,7 @@ exports.login = (req, res, next) => {
           // si l'identification est bonne on renvoi le user._id attendu par le front-end et un token
           res.status(200).json({
             userId: user.id,
+            role: user.role,
             token: jwt.sign(
               // donnée que l'ont veux encodé à l'intérieur du token
               { userId: user.id },
@@ -173,16 +178,26 @@ exports.deleteUtilisateur = (req, res, next) => {
 exports.userProfil = (req, res, next) => {
   const _id = req.params.id;
   // console.log(_id);
-  User.findByPk(_id)
+  User.findOne({
+    where: {
+      //Cible l'id de l'objet à afficher
+      id: _id,
+    }, include: [
+      { model: Publication, required: true },
+      { model: Commentaire, required: true }]
+  })
     .then((profil) => res.status(200).json(profil))
     .catch((error) => res.status(505).json({ error }));
 };
 
 // recherche d'information all utilisateur
 exports.userProfilAll = (req, res, next) => {
-  const _id = req.params.id;
   // console.log(_id);
-  User.findAll(_id)
+  User.findAll({
+    include: [
+      { model: Publication, required: true },
+      { model: Commentaire, required: true }]
+  })
     .then((profil) => res.status(200).json(profil))
     .catch((error) => res.status(505).json({ error }));
 };

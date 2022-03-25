@@ -62,21 +62,12 @@
           >
             <!-- On récupére les utilisateurs correspondant aux publications -->
             <div
+              v-if="getUtilisateur(publication.utilisateur_id)"
               class="allPublication card-wall flex-item-large display"
-              v-for="utilisateur in utilisateurs.filter((utilisateur) => {
-                return utilisateur.id == publication.utilisateur_id;
-              })"
-              :key="utilisateur.id"
             >
               <div class="profilPublication">
-                <img
-                  id="imageUrl"
-                  :src="utilisateur.imageUrl"
-                  class="profilImg"
-                />
-                <span class="card-title"
-                  >{{ utilisateur.nom }} {{ utilisateur.prenom }}</span
-                >
+                <img id="imageUrl" :src="user.imageUrl" class="profilImg" />
+                <span class="card-title">{{ user.nom }} {{ user.prenom }}</span>
               </div>
               <div class="flex-item-large white publicationMargin">
                 <input
@@ -105,7 +96,7 @@
                   {{ publication.message }}
                 </p>
                 <img
-                  v-if="!isHidden"
+                  v-if="!isHidden && publication.imageUrl !== ''"
                   id="imageUrl"
                   :src="publication.imageUrl"
                   class="publicationImg"
@@ -121,163 +112,6 @@
                     >
                       Supprimer ma publication
                     </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- affichage input new commentaire -->
-              <div class="publicationWidthButton">
-                <div class="allCommentaire card-wall flex-item-large">
-                  <div class="profilCommentaire">
-                    <!-- nouveau commentaire -->
-                    <form
-                      aria-label="Nouveau commentaire"
-                      class="flex-item-large"
-                    >
-                      <textarea
-                        v-model="commentaireMessage"
-                        class="newPublicationText"
-                        name="message"
-                        id="message"
-                        placeholder="Rédiger votre commentaire !"
-                        aria-label="Rédiger un nouveau commentaire"
-                      />
-
-                      <div v-if="!imagePreview">
-                        <img />
-                      </div>
-                      <div v-else>
-                        <img
-                          id="imagePreview"
-                          :src="imagePreview"
-                          class="postImage"
-                        />
-                      </div>
-
-                      <input
-                        id="newImagePreviewCommentaire"
-                        type="file"
-                        @change="previewImage"
-                        accept="image/png, image/jpg, image/jpeg"
-                        aria-label="Choisir un fichier"
-                      />
-
-                      <button
-                        @click.prevent="createCommentaire(publication.id)"
-                        type="submit"
-                        class="button"
-                        aria-label="Publier le message"
-                      >
-                        Publier
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-              <!-- afficher tous les commentaires -->
-              <!-- On récupére les commentaires des plus récents aux plus anciens -->
-              <div class="publicationWidthButton">
-                <!-- on trie les commentaires en fonction de la publication -->
-                <div
-                  v-for="commentaire in commentaires.filter((commentaire) => {
-                    return commentaire.publication_id == publication.id;
-                  })"
-                  :key="commentaire.publication_id"
-                >
-                  <div v-if="commentaire.length !== 0">
-                    <button
-                      v-on:click="
-                        commentaireVisibility = commentaireVisibilityArray(
-                          commentaire.publication_id,
-                          commentaireVisibility
-                        )
-                      "
-                      class="button"
-                      :id="commentaire.publication_id"
-                    >
-                      Pour afficher les commentaires
-                    </button>
-                  </div>
-                  <!-- On récupére les utilisateurs correspondant aux commentaires -->
-                  <div
-                    class="allCommentaire card-wall flex-item-large"
-                    v-for="utilisateur in utilisateurs.filter((utilisateur) => {
-                      return utilisateur.id == commentaire.utilisateur_id;
-                    })"
-                    :key="utilisateur.id"
-                  >
-                    <!-- afficher tous les commentaires -->
-                    <div class="profilCommentaire">
-                      <div
-                        v-if="
-                          commentaireVisibility.includes(
-                            commentaire.publication_id
-                          )
-                        "
-                        class="profilCommentaire com"
-                      >
-                        <img
-                          id="imageUrl"
-                          :src="utilisateur.imageUrl"
-                          class="profilImg"
-                        />
-                        <span class="card-title"
-                          >{{ utilisateur.nom }} {{ utilisateur.prenom }}</span
-                        >
-                      </div>
-                      <div
-                        v-if="
-                          commentaireVisibility.includes(
-                            commentaire.publication_id
-                          )
-                        "
-                        class="white commentaireMargin com"
-                      >
-                        <p
-                          v-if="
-                            commentaireVisibility.includes(
-                              commentaire.publication_id
-                            )
-                          "
-                        >
-                          {{ commentaire.id }}
-                        </p>
-                        <p
-                          v-if="
-                            commentaireVisibility.includes(
-                              commentaire.publication_id
-                            )
-                          "
-                        >
-                          {{ commentaire.message }}
-                        </p>
-                        <img
-                          v-if="!isHidden"
-                          id="imageUrl"
-                          :src="commentaire.imageUrl"
-                          class="publicationImg"
-                        />
-                      </div>
-                      <div
-                        class="commentaireWidthButton publicationWidthButton"
-                      >
-                        <div>
-                          <div>
-                            <button
-                              v-if="
-                                commentaireVisibility ==
-                                  commentaire.publication_id &&
-                                user.id == commentaire.utilisateur_id
-                              "
-                              @click.prevent="deleteCommentaire(commentaire.id)"
-                              class="button deleteAccount"
-                            >
-                              Supprimer mon commentaire
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -321,10 +155,11 @@ export default {
       imageUrl: "",
       imagePreview: "",
       isHidden: false,
+      utilisateur: {},
       publication: {},
-      commentaire: {},
+      // commentaire: {},
       publications: [],
-      commentaires: [],
+      // commentaires: [],
       commentaireVisibility: [],
       commentaireMessage: "",
     };
@@ -332,21 +167,6 @@ export default {
   async created() {
     let user = localStorage.getItem("user");
     let userLocal = JSON.parse(user);
-    await instance
-      .get("/profil/", {
-        headers: {
-          Authorization: "Bearer " + userLocal.token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        this.utilisateurs = response.data;
-        console.log(this.utilisateurs);
-      })
-      .catch(function (error) {
-        alert(error);
-        console.log(error);
-      });
     await instancePost
       .get("/publication/", {
         headers: {
@@ -357,21 +177,6 @@ export default {
       .then((response) => {
         this.publications = response.data;
         console.log(this.publications);
-      })
-      .catch(function (error) {
-        alert(error);
-        console.log(error);
-      });
-    await instancePost
-      .get("/commentaire/", {
-        headers: {
-          Authorization: "Bearer " + userLocal.token,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        this.commentaires = response.data;
-        console.log(this.commentaires);
       })
       .catch(function (error) {
         alert(error);
@@ -406,6 +211,17 @@ export default {
     logout() {
       this.$store.commit("logout");
       this.$router.push("/");
+    },
+    admin() {
+      let user = localStorage.getItem("user");
+      let userLocal = JSON.parse(user);
+      if (userLocal.role === "ADMIN") {
+        console.log(userLocal.role);
+        return true;
+      } else {
+        console.log(userLocal.role);
+        return false;
+      }
     },
     // aperçu dynamique
     previewImage(event) {
@@ -469,63 +285,82 @@ export default {
         return;
       }
     },
-    async createCommentaire(id) {
+    async getUtilisateur(utilisateur_id) {
       let user = localStorage.getItem("user");
       let userLocal = JSON.parse(user);
-      this.image = document.getElementById(
-        "newImagePreviewCommentaire"
-      ).files[0];
-      const formData = new FormData();
-      formData.append("userId", userLocal.userId);
-      formData.append("image", this.image);
-      formData.append("message", this.commentaireMessage);
-      formData.append("utilisateur_id", userLocal.userId);
-      formData.append("publication_id", id);
-      // console.log(id);
-      // console.log(this.image);
-      await instancePost
-        .post("/commentaire/", formData, {
+      console.log(utilisateur_id);
+      await instance
+        .get("/profil/" + utilisateur_id, {
           headers: {
             Authorization: "Bearer " + userLocal.token,
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         })
         .then((response) => {
-          location.reload();
-          console.log(response);
+          this.utilisateur = response.data;
+          console.log(response.data);
+          console.log(this.utilisateur);
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    async deleteCommentaire(id) {
-      let confirmDeleteCommentaire = confirm(
-        "Attention ! Votre commentaire sera définitivement supprimé !"
-      );
-      // console.log(id);
-      if (confirmDeleteCommentaire == true) {
-        let user = localStorage.getItem("user");
-        let userLocal = JSON.parse(user);
-        await instancePost
-          .delete(`/commentaire/${id}`, {
-            headers: {
-              Authorization: "Bearer " + userLocal.token,
-            },
-          })
-          .then(() => {
-            location.reload();
-          });
-      } else {
-        return;
-      }
-    },
+    // async createCommentaire(id) {
+    //   let user = localStorage.getItem("user");
+    //   let userLocal = JSON.parse(user);
+    //   this.image = document.getElementById(
+    //     "newImagePreviewCommentaire"
+    //   ).files[0];
+    //   const formData = new FormData();
+    //   formData.append("userId", userLocal.userId);
+    //   formData.append("image", this.image);
+    //   formData.append("message", this.commentaireMessage);
+    //   formData.append("utilisateur_id", userLocal.userId);
+    //   formData.append("publication_id", id);
+    //   console.log(id);
+    //   console.log(this.image);
+    //   await instancePost
+    //     .post("/commentaire/", formData, {
+    //       headers: {
+    //         Authorization: "Bearer " + userLocal.token,
+    //         "Content-Type": "multipart/form-data",
+    //       },
+    //     })
+    //     .then((response) => {
+    //       location.reload();
+    //       console.log(response);
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     });
+    // },
+    // async deleteCommentaire(id) {
+    //   let confirmDeleteCommentaire = confirm(
+    //     "Attention ! Votre commentaire sera définitivement supprimé !"
+    //   );
+    //   // console.log(id);
+    //   if (confirmDeleteCommentaire == true) {
+    //     let user = localStorage.getItem("user");
+    //     let userLocal = JSON.parse(user);
+    //     await instancePost
+    //       .delete(`/commentaire/${id}`, {
+    //         headers: {
+    //           Authorization: "Bearer " + userLocal.token,
+    //         },
+    //       })
+    //       .then(() => {
+    //         location.reload();
+    //       });
+    //   } else {
+    //     return;
+    //   }
+    // },
   },
 };
 </script>
 
 
 
-bouton affichage commentaires seulement present quand commentaires
 input selection d'image qui doit s'afficher que dans l'input concerné
 
 affichage image quand null ou "" à cacher dans publication et commentaire
@@ -535,9 +370,15 @@ mise en place des droits ADMIN
 
 compte administrateur =>
 
+"pseudo": "Modérateur(trice)",
 "nom": "Groupomania",
 "prenom": "Communication",
-"pseudo": "Modérateur(trice)",
 "email": "Contact@Groupomania.fr",
 "password": "Groupomania!00",
 "role": "ADMIN"
+
+utilisateur_id: {
+            type: Sequelize.BIGINT,
+            allowNull: false,
+            references: {model: 'utilisateur', key: 'id'}
+        }

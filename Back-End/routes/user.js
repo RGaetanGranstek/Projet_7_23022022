@@ -16,6 +16,7 @@ router.delete("/delete/:id", auth, multer, userCtrl.deleteUtilisateur);
 
 // Information de profil
 router.get("/profil/:id", auth, multer, userCtrl.userProfil);
+
 // Information de tous les profils
 router.get("/profil/", auth, multer, userCtrl.userProfilAll);
 
