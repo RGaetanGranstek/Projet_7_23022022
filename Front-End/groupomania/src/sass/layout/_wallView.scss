@@ -1,8 +1,8 @@
 // Page wallView
 .display {
-  display: flex;
   flex-wrap: wrap-reverse;
   @include breakpoint(laptop-desktop) {
+    display: flex;
     flex-wrap: wrap;
   }
 }
@@ -50,7 +50,8 @@
   align-items: center;
 }
 .newPublication {
-  padding: 1rem;
+  padding: 2rem;
+  justify-content: center;
   &Text {
     border-radius: 0 15px;
     border: none;
@@ -86,7 +87,6 @@
 .allPublication {
   margin: 15px;
   padding: 1.5rem;
-  display: flex !important;
 }
 .publicationMargin {
   margin-left: 15px;

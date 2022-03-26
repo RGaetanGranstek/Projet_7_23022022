@@ -98,8 +98,8 @@ exports.getOnePublication = (req, res, next) => {
       id: _id,
     },
     include: [
-      { model: User, required: true },
-      { model: Commentaire, required: false, include: [User] }]
+      { model: User, required: true, attributes: ['nom', 'prenom', 'pseudo', 'imageUrl'] },
+      { model: Commentaire, required: false, include: [{ model: User, attributes: ['nom', 'prenom', 'pseudo', 'imageUrl'] }] }]
   })
     .then((publication) => res.status(200).json(publication))
     .catch((error) => res.status(500).json({ error }));
@@ -109,8 +109,8 @@ exports.getAllPublication = (req, res, next) => {
   // findByPk pour trouver tous les objets
   Publication.findAll({
     include: [
-      { model: User, required: true },
-      { model: Commentaire, required: false, include: [User] }]
+      { model: User, required: true, attributes: ['nom', 'prenom', 'pseudo', 'imageUrl'] },
+      { model: Commentaire, required: false, include: [{ model: User, attributes: ['nom', 'prenom', 'pseudo', 'imageUrl'] }] }]
   })
     // récupération du tableau de tous les publications, et ont renvoi le tableau reçu par le Back-End (base de donnée)
     .then((publications) => res.status(200).json(publications))

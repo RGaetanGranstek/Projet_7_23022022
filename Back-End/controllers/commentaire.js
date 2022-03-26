@@ -94,7 +94,7 @@ exports.getOneCommentaire = (req, res, next) => {
       id: _id,
     }, include: [
       { model: Publication, required: true },
-      { model: User, required: true }]
+      { model: User, required: true, attributes: ['nom', 'prenom', 'pseudo', 'imageUrl'] }]
   })
     .then((commentaire) => res.status(200).json(commentaire))
     .catch((error) => res.status(500).json({ error }));
@@ -104,8 +104,8 @@ exports.getAllCommentaire = (req, res, next) => {
   // findByPk pour trouver tous les objets
   Commentaire.findAll({
     include: [
-      { model: Publication, required: true },
-      { model: User, required: true }]
+      { model: Publication, required: true, },
+      { model: User, required: true, attributes: ['nom', 'prenom', 'pseudo', 'imageUrl'] }]
   })
     // récupération du tableau de tous les commentaires, et ont renvoi le tableau reçu par le Back-End (base de donnée)
     .then((commentaires) => res.status(200).json(commentaires))

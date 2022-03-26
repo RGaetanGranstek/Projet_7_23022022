@@ -70,13 +70,13 @@ exports.signup = (req, res, next) => {
         imageUrl: `${req.protocol}://${req.get("host")}/images/${process.env.imageUrlDefault
           }`,
       };
-      // console.log(user);
+      console.log(user);
       User.create(user).then(() =>
         res.status(201).json({ message: "Utilisateur créé !" })
       )
-        .catch(() => res.status(503).json({ message: "Utilisateur existant !" }));
+      // .catch(() => res.status(503).json({ message: "Utilisateur existant !" }));
     })
-  // .catch((error) => res.status(502).json({ error }));
+    .catch((error) => res.status(502).json({ error }));
 };
 
 //fonction login pour connecter les utilisateurs existants
@@ -185,8 +185,8 @@ exports.userProfil = (req, res, next) => {
       id: _id,
     }
     , include: [
-      { model: Publication, required: true },
-      { model: Commentaire, required: true }]
+      { model: Publication, required: false },
+      { model: Commentaire, required: false }]
   })
     .then((profil) => res.status(200).json(profil))
     .catch((error) => res.status(505).json({ error }));
@@ -197,8 +197,8 @@ exports.userProfilAll = (req, res, next) => {
   // console.log(_id);
   User.findAll({
     include: [
-      { model: Publication, required: true },
-      { model: Commentaire, required: true }]
+      { model: Publication, required: false },
+      { model: Commentaire, required: false }]
   })
     .then((profil) => res.status(200).json(profil))
     .catch((error) => res.status(505).json({ error }));

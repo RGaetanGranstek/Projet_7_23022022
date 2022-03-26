@@ -13,7 +13,7 @@
             <img id="imageUrl" :src="user.imageUrl" class="profilImg" />
           </div>
         </div>
-        <form aria-label="Nouveau message" class="flex-item-large bottomSup">
+        <form aria-label="Nouveau message" class="flex-item-large">
           <input
             v-model="titre"
             id="titre"
@@ -53,7 +53,16 @@
             Publier
           </button>
         </form>
-        <!-- afficher toute les publications -->
+      </div>
+      <!-- profil -->
+      <div class="card-wall flex-item-small center">
+        <div class="flex">
+          <router-link to="/Profil" class="link">Mon Profil</router-link>
+          <button @click="logout()" class="button">Déconnexion</button>
+        </div>
+      </div>
+      <!-- afficher toute les publications -->
+      <div class="newPublication flex-item-large display">
         <div class="allUtilisateursBackground">
           <!-- On récupére les publications des plus récentes aux plus anciennes -->
           <div
@@ -61,11 +70,24 @@
             v-for="publication in publications.slice().reverse()"
           >
             <!-- On récupére les utilisateurs correspondant aux publications -->
-            <div class="allPublication card-wall flex-item-large display">
-              <!-- <div class="profilPublication">
-                <img id="imageUrl" :src="user.imageUrl" class="profilImg" />
-                <span class="card-title">{{ user.nom }} {{ user.prenom }}</span>
-              </div> -->
+            <div
+              v-for="utilisateur in publications.filter((utilisateur) => {
+                return utilisateur.id == publication.utilisateur_id;
+              })"
+              :key="utilisateur.id"
+              class="allPublication card-wall flex-item-large display"
+            >
+              <div class="profilPublication">
+                <img
+                  id="imageUrl"
+                  :src="publication.utilisateur.imageUrl"
+                  class="profilImg"
+                />
+                <span class="card-title"
+                  >{{ publication.utilisateur.nom }}
+                  {{ publication.utilisateur.prenom }}</span
+                >
+              </div>
               <div class="flex-item-large white publicationMargin">
                 <input
                   v-if="isHidden"
@@ -101,7 +123,7 @@
               </div>
               <div class="publicationWidthButton">
                 <div class="form-column">
-                  <!-- <div>
+                  <div>
                     <button
                       v-if="user.id == publication.utilisateur_id"
                       @click.prevent="deletePublication(publication.id)"
@@ -109,19 +131,162 @@
                     >
                       Supprimer ma publication
                     </button>
-                  </div> -->
+                  </div>
                 </div>
               </div>
+              <!-- affichage input new commentaire -->
+              <div class="publicationWidthButton">
+                <div class="allCommentaire card-wall flex-item-large">
+                  <div class="profilCommentaire">
+                    <!-- nouveau commentaire -->
+                    <form
+                      aria-label="Nouveau commentaire"
+                      class="flex-item-large"
+                    >
+                      <textarea
+                        v-model="commentaireMessage"
+                        class="newPublicationText"
+                        name="message"
+                        id="message"
+                        placeholder="Rédiger votre commentaire !"
+                        aria-label="Rédiger un nouveau commentaire"
+                      />
+
+                      <div v-if="!imagePreview">
+                        <img />
+                      </div>
+                      <div v-else>
+                        <img
+                          id="imagePreview"
+                          :src="imagePreview"
+                          class="postImage"
+                        />
+                      </div>
+
+                      <input
+                        id="newImagePreviewCommentaire"
+                        type="file"
+                        @change="previewImage"
+                        accept="image/png, image/jpg, image/jpeg"
+                        aria-label="Choisir un fichier"
+                      />
+
+                      <button
+                        @click.prevent="createCommentaire(publication.id)"
+                        type="submit"
+                        class="button"
+                        aria-label="Publier le message"
+                      >
+                        Publier
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!-- afficher tous les commentaires -->
+              <!-- On récupére les commentaires des plus récents aux plus anciens -->
+              <!-- <div class="publicationWidthButton"> -->
+              <!-- on trie les commentaires en fonction de la publication -->
+              <!-- <div v-if="publication.commentaire">
+                  <div>
+                    <button
+                      v-on:click="
+                        commentaireVisibility = commentaireVisibilityArray(
+                          commentaire.publication_id,
+                          commentaireVisibility
+                        )
+                      "
+                      class="button"
+                      :id="commentaire.publication_id"
+                    >
+                      Pour afficher les commentaires
+                    </button>
+                  </div> -->
+              <!-- On récupére les utilisateurs correspondant aux commentaires -->
+              <!-- <div
+                    class="allCommentaire card-wall flex-item-large"
+                    v-for="utilisateur in utilisateurs.filter((utilisateur) => {
+                      return utilisateur.id == commentaire.utilisateur_id;
+                    })"
+                    :key="utilisateur.id"
+                  > -->
+              <!-- afficher tous les commentaires -->
+              <!-- <div class="profilCommentaire">
+                      <div
+                        v-if="
+                          commentaireVisibility.includes(
+                            commentaire.publication_id
+                          )
+                        "
+                        class="profilCommentaire com"
+                      >
+                        <img
+                          id="imageUrl"
+                          :src="utilisateur.imageUrl"
+                          class="profilImg"
+                        />
+                        <span class="card-title"
+                          >{{ utilisateur.nom }} {{ utilisateur.prenom }}</span
+                        >
+                      </div>
+                      <div
+                        v-if="
+                          commentaireVisibility.includes(
+                            commentaire.publication_id
+                          )
+                        "
+                        class="white commentaireMargin com"
+                      >
+                        <p
+                          v-if="
+                            commentaireVisibility.includes(
+                              commentaire.publication_id
+                            )
+                          "
+                        >
+                          {{ commentaire.id }}
+                        </p>
+                        <p
+                          v-if="
+                            commentaireVisibility.includes(
+                              commentaire.publication_id
+                            )
+                          "
+                        >
+                          {{ commentaire.message }}
+                        </p>
+                        <img
+                          v-if="!isHidden"
+                          id="imageUrl"
+                          :src="commentaire.imageUrl"
+                          class="publicationImg"
+                        />
+                      </div>
+                      <div
+                        class="commentaireWidthButton publicationWidthButton"
+                      >
+                        <div>
+                          <div>
+                            <button
+                              v-if="
+                                commentaireVisibility ==
+                                  commentaire.publication_id &&
+                                user.id == commentaire.utilisateur_id
+                              "
+                              @click.prevent="deleteCommentaire(commentaire.id)"
+                              class="button deleteAccount"
+                            >
+                              Supprimer mon commentaire
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> -->
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- profil -->
-      <div class="card-wall flex-item-small center">
-        <div class="flex">
-          <router-link to="/Profil" class="link">Mon Profil</router-link>
-          <button @click="logout()" class="button">Déconnexion</button>
         </div>
       </div>
     </div>
@@ -152,7 +317,6 @@ export default {
       imageUrl: "",
       imagePreview: "",
       isHidden: false,
-      publication: {},
       publications: [],
       commentaireVisibility: [],
       commentaireMessage: "",
@@ -360,7 +524,7 @@ export default {
 
 input selection d'image qui doit s'afficher que dans l'input concerné
 
-affichage image quand null ou "" à cacher dans publication et commentaire
+affichage image quand null ou "" à cacher dans commentaire
 pattern contrôle modification info profil
 mise en place des droits ADMIN
 
@@ -373,9 +537,3 @@ compte administrateur =>
 "email": "Contact@Groupomania.fr",
 "password": "Groupomania!00",
 "role": "ADMIN"
-
-utilisateur_id: {
-            type: Sequelize.BIGINT,
-            allowNull: false,
-            references: {model: 'utilisateur', key: 'id'}
-        }
