@@ -18,7 +18,7 @@ exports.createCommentaire = (req, res, next) => {
   // console.log(req);
   // console.log(req.file);
   const commentaire = {
-    utilisateur_id: req.body.userId,
+    utilisateur_id: req.body.utilisateur_id,
     publication_id: req.body.publication_id,
     message: req.body.message,
     imageUrl: newImageUrl,

@@ -1,7 +1,4 @@
-
 const { sequelize } = require("../config/sequelize.js");
-
-
 // Connexion à la base de donnée MySQL
 sequelize.authenticate()
     .then(() => {
@@ -23,10 +20,17 @@ db.Commentaire = require("./commentaire.js");
 db.User.hasMany(db.Publication, { foreignKey: 'utilisateur_id' });
 db.User.hasMany(db.Commentaire, { foreignKey: 'utilisateur_id' });
 
-db.Publication.belongsTo(db.User, { foreignKey: 'utilisateur_id' });
-db.Publication.hasMany(db.Commentaire, { foreignKey: 'publication_id', targetKey: 'id' });
+db.Publication.belongsTo(db.User, { foreignKey: 'utilisateur_id' }, {
+    onDelete: 'CASCADE',
+    hooks: true
+});
+db.Publication.hasMany(db.Commentaire, { foreignKey: 'publication_id' });
 
-db.Commentaire.belongsTo(db.User, { foreignKey: 'utilisateur_id', targetKey: 'id' });
-db.Commentaire.belongsTo(db.Publication, { foreignKey: 'publication_id', targetKey: 'id' });
+db.Commentaire.belongsTo(db.User, { foreignKey: 'utilisateur_id' });
+
+db.Commentaire.belongsTo(db.Publication, { foreignKey: 'publication_id' }, {
+    onDelete: 'CASCADE',
+    hooks: true
+});
 
 module.exports = db

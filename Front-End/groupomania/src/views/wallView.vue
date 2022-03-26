@@ -61,14 +61,11 @@
             v-for="publication in publications.slice().reverse()"
           >
             <!-- On récupére les utilisateurs correspondant aux publications -->
-            <div
-              v-if="getUtilisateur(publication.utilisateur_id)"
-              class="allPublication card-wall flex-item-large display"
-            >
-              <div class="profilPublication">
+            <div class="allPublication card-wall flex-item-large display">
+              <!-- <div class="profilPublication">
                 <img id="imageUrl" :src="user.imageUrl" class="profilImg" />
                 <span class="card-title">{{ user.nom }} {{ user.prenom }}</span>
-              </div>
+              </div> -->
               <div class="flex-item-large white publicationMargin">
                 <input
                   v-if="isHidden"
@@ -104,7 +101,7 @@
               </div>
               <div class="publicationWidthButton">
                 <div class="form-column">
-                  <div>
+                  <!-- <div>
                     <button
                       v-if="user.id == publication.utilisateur_id"
                       @click.prevent="deletePublication(publication.id)"
@@ -112,7 +109,7 @@
                     >
                       Supprimer ma publication
                     </button>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -136,9 +133,9 @@
 import FooterSection from "@/components/Footer.vue";
 import { mapState } from "vuex";
 const axios = require("axios");
-const instance = axios.create({
-  baseURL: "http://localhost:3000/api/auth/",
-});
+// const instance = axios.create({
+//   baseURL: "http://localhost:3000/api/auth/",
+// });
 const instancePost = axios.create({
   baseURL: "http://localhost:3000/api/",
 });
@@ -155,11 +152,8 @@ export default {
       imageUrl: "",
       imagePreview: "",
       isHidden: false,
-      utilisateur: {},
       publication: {},
-      // commentaire: {},
       publications: [],
-      // commentaires: [],
       commentaireVisibility: [],
       commentaireMessage: "",
     };
@@ -268,7 +262,7 @@ export default {
       let confirmDeletePublication = confirm(
         "Attention ! Votre message ainsi que les commentaires associés seront définitivement supprimés !"
       );
-      // console.log(id);
+      console.log(id);
       if (confirmDeletePublication == true) {
         let user = localStorage.getItem("user");
         let userLocal = JSON.parse(user);
@@ -280,31 +274,34 @@ export default {
           })
           .then(() => {
             location.reload();
+          })
+          .catch((error) => {
+            console.log(error);
           });
       } else {
         return;
       }
     },
-    async getUtilisateur(utilisateur_id) {
-      let user = localStorage.getItem("user");
-      let userLocal = JSON.parse(user);
-      console.log(utilisateur_id);
-      await instance
-        .get("/profil/" + utilisateur_id, {
-          headers: {
-            Authorization: "Bearer " + userLocal.token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((response) => {
-          this.utilisateur = response.data;
-          console.log(response.data);
-          console.log(this.utilisateur);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
+    // async getUtilisateur(utilisateur_id) {
+    //   let user = localStorage.getItem("user");
+    //   let userLocal = JSON.parse(user);
+    //   console.log(utilisateur_id);
+    //   await instance
+    //     .get("/profil/" + utilisateur_id, {
+    //       headers: {
+    //         Authorization: "Bearer " + userLocal.token,
+    //         "Content-Type": "application/json",
+    //       },
+    //     })
+    //     .then((response) => {
+    //       this.utilisateur = response.data;
+    //       console.log(response.data);
+    //       console.log(this.utilisateur);
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     });
+    // },
     // async createCommentaire(id) {
     //   let user = localStorage.getItem("user");
     //   let userLocal = JSON.parse(user);

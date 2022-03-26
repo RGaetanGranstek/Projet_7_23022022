@@ -13,6 +13,6 @@ const sequelize = new Sequelize({
   dialect: "mysql",
 });
 
-//on exporte pour utiliser notre connexion depuis les autre fichiers.
+//on exporte pour utiliser notre connexion depuis les autres fichiers.
 var exports = (module.exports = {});
 exports.sequelize = sequelize;

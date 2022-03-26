@@ -20,7 +20,7 @@ exports.createPublication = (req, res, next) => {
   // console.log(req);
   // console.log(req.file);
   const publication = {
-    utilisateur_id: req.body.userId,
+    utilisateur_id: req.body.utilisateur_id,
     titre: req.body.titre,
     message: req.body.message,
     imageUrl: newImageUrl,
@@ -83,7 +83,7 @@ exports.deletePublication = (req, res, next) => {
         })
       }
     })
-  // .catch((error) => res.status(500).json({ error }));
+    .catch((error) => res.status(500).json({ error }));
 };
 
 // :id <= parti de la route dynamique pour une recherche à l'unité dans la base de donnée
@@ -99,7 +99,7 @@ exports.getOnePublication = (req, res, next) => {
     },
     include: [
       { model: User, required: true },
-      { model: Commentaire, required: true }]
+      { model: Commentaire, required: false, include: [User] }]
   })
     .then((publication) => res.status(200).json(publication))
     .catch((error) => res.status(500).json({ error }));
@@ -110,7 +110,7 @@ exports.getAllPublication = (req, res, next) => {
   Publication.findAll({
     include: [
       { model: User, required: true },
-      { model: Commentaire, required: true }]
+      { model: Commentaire, required: false, include: [User] }]
   })
     // récupération du tableau de tous les publications, et ont renvoi le tableau reçu par le Back-End (base de donnée)
     .then((publications) => res.status(200).json(publications))

@@ -159,8 +159,8 @@ exports.deleteUtilisateur = (req, res, next) => {
         // ont récupère le nom du fichier à supprimer
         const filename = utilisateur.imageUrl.split("/images/")[1];
         // ont supprime l'objet
-        // console.log(_id);
-        // console.log(filename);
+        console.log(_id);
+        console.log(filename);
         fs.unlink(`images/${filename}`, () => {
           // ont renvoi une réponse si fonctionne ou non
           User.destroy({
@@ -172,6 +172,7 @@ exports.deleteUtilisateur = (req, res, next) => {
         })
       }
     })
+    .catch((error) => res.status(500).json({ error }));
 };
 
 // recherche d'information utilisateur
@@ -182,7 +183,8 @@ exports.userProfil = (req, res, next) => {
     where: {
       //Cible l'id de l'objet à afficher
       id: _id,
-    }, include: [
+    }
+    , include: [
       { model: Publication, required: true },
       { model: Commentaire, required: true }]
   })
