@@ -132,10 +132,48 @@
                       Supprimer ma publication
                     </button>
                   </div>
+                  <!-- visibilité des commentaires -->
+                  <div v-if="publication.commentaires != 0">
+                    <button
+                      v-if="!isHiddenCom"
+                      v-on:click="isHiddenCom = true"
+                      class="button"
+                    >
+                      Afficher les commentaires
+                    </button>
+                    <button
+                      v-if="isHiddenCom"
+                      v-on:click="isHiddenCom = !isHiddenCom"
+                      class="button"
+                    >
+                      Afficher les commentaires
+                    </button>
+                  </div>
+                </div>
+                <!-- visibilité de l'input nouveau commentaire -->
+                <div>
+                  <button
+                    v-if="!isHiddenNewCom"
+                    v-on:click="isHiddenNewCom = true"
+                    class="button"
+                  >
+                    Répondre
+                  </button>
+                  <button
+                    v-if="isHiddenNewCom"
+                    v-on:click="isHiddenNewCom = !isHiddenNewCom"
+                    class="button"
+                  >
+                    Répondre
+                  </button>
                 </div>
               </div>
               <!-- affichage input new commentaire -->
-              <div class="publicationWidthButton">
+              <div
+                v-if="isHiddenNewCom"
+                :src="publication.imageUrl"
+                class="publicationWidthButton"
+              >
                 <div class="allCommentaire card-wall flex-item-large">
                   <div class="profilCommentaire">
                     <!-- nouveau commentaire -->
@@ -152,13 +190,13 @@
                         aria-label="Rédiger un nouveau commentaire"
                       />
 
-                      <div v-if="!imagePreview">
+                      <div v-if="!imagePreviewCom">
                         <img />
                       </div>
                       <div v-else>
                         <img
-                          id="imagePreview"
-                          :src="imagePreview"
+                          id="imagePreviewCom"
+                          :src="imagePreviewCom"
                           class="postImage"
                         />
                       </div>
@@ -185,78 +223,37 @@
               </div>
               <!-- afficher tous les commentaires -->
               <!-- On récupére les commentaires des plus récents aux plus anciens -->
-              <!-- <div class="publicationWidthButton"> -->
-              <!-- on trie les commentaires en fonction de la publication -->
-              <!-- <div v-if="publication.commentaire">
-                  <div>
-                    <button
-                      v-on:click="
-                        commentaireVisibility = commentaireVisibilityArray(
-                          commentaire.publication_id,
-                          commentaireVisibility
-                        )
-                      "
-                      class="button"
-                      :id="commentaire.publication_id"
-                    >
-                      Pour afficher les commentaires
-                    </button>
-                  </div> -->
-              <!-- On récupére les utilisateurs correspondant aux commentaires -->
-              <!-- <div
+              <div class="publicationWidthButton">
+                <!-- on trie les commentaires en fonction de la publication -->
+                <div v-if="publication.commentaires && isHiddenCom">
+                  <!-- On récupére les utilisateurs correspondant aux commentaires -->
+                  <div
+                    v-for="commentaire in publication.commentaires"
+                    :key="commentaire.id"
                     class="allCommentaire card-wall flex-item-large"
-                    v-for="utilisateur in utilisateurs.filter((utilisateur) => {
-                      return utilisateur.id == commentaire.utilisateur_id;
-                    })"
-                    :key="utilisateur.id"
-                  > -->
-              <!-- afficher tous les commentaires -->
-              <!-- <div class="profilCommentaire">
-                      <div
-                        v-if="
-                          commentaireVisibility.includes(
-                            commentaire.publication_id
-                          )
-                        "
-                        class="profilCommentaire com"
-                      >
+                  >
+                    <!-- afficher tous les commentaires -->
+                    <div class="profilCommentaire">
+                      <div class="profilCommentaire com">
                         <img
                           id="imageUrl"
-                          :src="utilisateur.imageUrl"
+                          :src="commentaire.utilisateur.imageUrl"
                           class="profilImg"
                         />
                         <span class="card-title"
-                          >{{ utilisateur.nom }} {{ utilisateur.prenom }}</span
+                          >{{ commentaire.utilisateur.nom }}
+                          {{ commentaire.utilisateur.prenom }}</span
                         >
                       </div>
-                      <div
-                        v-if="
-                          commentaireVisibility.includes(
-                            commentaire.publication_id
-                          )
-                        "
-                        class="white commentaireMargin com"
-                      >
-                        <p
-                          v-if="
-                            commentaireVisibility.includes(
-                              commentaire.publication_id
-                            )
-                          "
-                        >
+                      <div class="white commentaireMargin com">
+                        <p>
                           {{ commentaire.id }}
                         </p>
-                        <p
-                          v-if="
-                            commentaireVisibility.includes(
-                              commentaire.publication_id
-                            )
-                          "
-                        >
+                        <p>
                           {{ commentaire.message }}
                         </p>
                         <img
-                          v-if="!isHidden"
+                          v-if="!isHidden && commentaire.imageUrl !== ''"
                           id="imageUrl"
                           :src="commentaire.imageUrl"
                           class="publicationImg"
@@ -268,12 +265,9 @@
                         <div>
                           <div>
                             <button
-                              v-if="
-                                commentaireVisibility ==
-                                  commentaire.publication_id &&
-                                user.id == commentaire.utilisateur_id
+                              @click.prevent="
+                                deleteCommentaire(commentaires.id)
                               "
-                              @click.prevent="deleteCommentaire(commentaire.id)"
                               class="button deleteAccount"
                             >
                               Supprimer mon commentaire
@@ -284,7 +278,7 @@
                     </div>
                   </div>
                 </div>
-              </div> -->
+              </div>
             </div>
           </div>
         </div>
@@ -316,9 +310,12 @@ export default {
       message: "",
       imageUrl: "",
       imagePreview: "",
+      imagePreviewCom: "",
       isHidden: false,
+      isHiddenCom: false,
+      isHiddenNewCom: false,
       publications: [],
-      commentaireVisibility: [],
+      // commentaireVisibility: [],
       commentaireMessage: "",
     };
   },
@@ -357,15 +354,15 @@ export default {
     ...mapState(["status"]),
   },
   methods: {
-    commentaireVisibilityArray: (id, array) => {
-      if (array.includes(id)) {
-        array.pop(id);
-      } else {
-        array.push(id);
-      }
-      // console.log(typeof id);
-      return array;
-    },
+    // commentaireVisibilityArray: (id, array) => {
+    //   if (array.includes(id)) {
+    //     array.pop(id);
+    //   } else {
+    //     array.push(id);
+    //   }
+    //   // console.log(typeof id);
+    //   return array;
+    // },
     logout() {
       this.$store.commit("logout");
       this.$router.push("/");
@@ -446,26 +443,6 @@ export default {
         return;
       }
     },
-    // async getUtilisateur(utilisateur_id) {
-    //   let user = localStorage.getItem("user");
-    //   let userLocal = JSON.parse(user);
-    //   console.log(utilisateur_id);
-    //   await instance
-    //     .get("/profil/" + utilisateur_id, {
-    //       headers: {
-    //         Authorization: "Bearer " + userLocal.token,
-    //         "Content-Type": "application/json",
-    //       },
-    //     })
-    //     .then((response) => {
-    //       this.utilisateur = response.data;
-    //       console.log(response.data);
-    //       console.log(this.utilisateur);
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-    // },
     // async createCommentaire(id) {
     //   let user = localStorage.getItem("user");
     //   let userLocal = JSON.parse(user);
@@ -522,9 +499,8 @@ export default {
 
 
 
-input selection d'image qui doit s'afficher que dans l'input concerné
-
-affichage image quand null ou "" à cacher dans commentaire
+Afficher que pour element concerné input et commentaire et non tous en même temps
+input selection d'image qui doit s'afficher que dans l'input concerné pour les commentaire (à vérifier)
 pattern contrôle modification info profil
 mise en place des droits ADMIN
 
