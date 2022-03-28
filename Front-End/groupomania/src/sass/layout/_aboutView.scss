@@ -10,8 +10,15 @@
   h1 {
     margin-top: -50px;
     width: 45%;
+    @include breakpoint(mobileonly) {
+      width: 70%;
+    }
+    @include breakpoint(laptop-desktop) {
+      width: 55%;
+    }
   }
   p {
+    padding: 10px;
     width: 75%;
     font-size: $font-H;
   }

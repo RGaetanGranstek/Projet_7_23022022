@@ -10,7 +10,7 @@
       <div class="newPublication card-wall flex-item-large display">
         <div>
           <div>
-            <img id="imageUrl" :src="user.imageUrl" class="profilImg" />
+            <img alt="image" :src="user.imageUrl" class="profilImg" />
           </div>
         </div>
         <form aria-label="Nouveau message" class="flex-item-large">
@@ -29,11 +29,14 @@
             aria-label="Rédiger un nouveau message"
           />
 
-          <div v-if="!imagePreview">
-            <img />
-          </div>
+          <div v-if="!imagePreview"></div>
           <div v-else>
-            <img id="imagePreview" :src="imagePreview" class="postImage" />
+            <img
+              alt="image"
+              id="imagePreview"
+              :src="imagePreview"
+              class="postImage"
+            />
           </div>
 
           <input
@@ -55,14 +58,14 @@
         </form>
       </div>
       <!-- profil -->
-      <div class="card-wall flex-item-small center">
+      <div class="card-wall flex-item-small">
         <div class="flex">
           <router-link to="/Profil" class="link">Mon Profil</router-link>
           <button @click="logout()" class="button">Déconnexion</button>
         </div>
       </div>
       <!-- afficher toute les publications -->
-      <div class="newPublication flex-item-large display">
+      <div class="newPublication flex-item-large display displayWall">
         <div class="allUtilisateursBackground">
           <!-- On récupére les publications des plus récentes aux plus anciennes -->
           <div
@@ -79,13 +82,12 @@
             >
               <div class="profilPublication">
                 <img
-                  id="imageUrl"
+                  alt="image"
                   :src="publication.utilisateur.imageUrl"
                   class="profilImg"
                 />
-                <span class="card-title"
-                  >{{ publication.utilisateur.nom }}
-                  {{ publication.utilisateur.prenom }}</span
+                <span class="card-title">
+                  {{ publication.utilisateur.pseudo }}</span
                 >
               </div>
               <div class="flex-item-large white publicationMargin">
@@ -105,9 +107,9 @@
                   placeholder="Rédiger votre message !"
                   aria-label="Rédiger un nouveau message"
                 />
-                <p v-if="!isHidden">
+                <!-- <p v-if="!isHidden">
                   {{ publication.id }}
-                </p>
+                </p> -->
                 <p v-if="!isHidden">
                   {{ publication.titre }}
                 </p>
@@ -115,8 +117,8 @@
                   {{ publication.message }}
                 </p>
                 <img
+                  alt="image"
                   v-if="!isHidden && publication.imageUrl !== ''"
-                  id="imageUrl"
                   :src="publication.imageUrl"
                   class="publicationImg"
                 />
@@ -132,150 +134,17 @@
                       Supprimer ma publication
                     </button>
                   </div>
-                  <!-- visibilité des commentaires -->
-                  <div v-if="publication.commentaires != 0">
-                    <button
-                      v-if="!isHiddenCom"
-                      v-on:click="isHiddenCom = true"
-                      class="button"
+                  <!-- switch page publication et visibilité des commentaires -->
+                  <div>
+                    <router-link
+                      :to="{
+                        name: 'publication',
+                        params: { id: publication.id },
+                      }"
+                      class="link"
                     >
-                      Afficher les commentaires
-                    </button>
-                    <button
-                      v-if="isHiddenCom"
-                      v-on:click="isHiddenCom = !isHiddenCom"
-                      class="button"
+                      Afficher la publication</router-link
                     >
-                      Afficher les commentaires
-                    </button>
-                  </div>
-                </div>
-                <!-- visibilité de l'input nouveau commentaire -->
-                <div>
-                  <button
-                    v-if="!isHiddenNewCom"
-                    v-on:click="isHiddenNewCom = true"
-                    class="button"
-                  >
-                    Répondre
-                  </button>
-                  <button
-                    v-if="isHiddenNewCom"
-                    v-on:click="isHiddenNewCom = !isHiddenNewCom"
-                    class="button"
-                  >
-                    Répondre
-                  </button>
-                </div>
-              </div>
-              <!-- affichage input new commentaire -->
-              <div
-                v-if="isHiddenNewCom"
-                :src="publication.imageUrl"
-                class="publicationWidthButton"
-              >
-                <div class="allCommentaire card-wall flex-item-large">
-                  <div class="profilCommentaire">
-                    <!-- nouveau commentaire -->
-                    <form
-                      aria-label="Nouveau commentaire"
-                      class="flex-item-large"
-                    >
-                      <textarea
-                        v-model="commentaireMessage"
-                        class="newPublicationText"
-                        name="message"
-                        id="message"
-                        placeholder="Rédiger votre commentaire !"
-                        aria-label="Rédiger un nouveau commentaire"
-                      />
-
-                      <div v-if="!imagePreviewCom">
-                        <img />
-                      </div>
-                      <div v-else>
-                        <img
-                          id="imagePreviewCom"
-                          :src="imagePreviewCom"
-                          class="postImage"
-                        />
-                      </div>
-
-                      <input
-                        id="newImagePreviewCommentaire"
-                        type="file"
-                        @change="previewImage"
-                        accept="image/png, image/jpg, image/jpeg"
-                        aria-label="Choisir un fichier"
-                      />
-
-                      <button
-                        @click.prevent="createCommentaire(publication.id)"
-                        type="submit"
-                        class="button"
-                        aria-label="Publier le message"
-                      >
-                        Publier
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-              <!-- afficher tous les commentaires -->
-              <!-- On récupére les commentaires des plus récents aux plus anciens -->
-              <div class="publicationWidthButton">
-                <!-- on trie les commentaires en fonction de la publication -->
-                <div v-if="publication.commentaires && isHiddenCom">
-                  <!-- On récupére les utilisateurs correspondant aux commentaires -->
-                  <div
-                    v-for="commentaire in publication.commentaires"
-                    :key="commentaire.id"
-                    class="allCommentaire card-wall flex-item-large"
-                  >
-                    <!-- afficher tous les commentaires -->
-                    <div class="profilCommentaire">
-                      <div class="profilCommentaire com">
-                        <img
-                          id="imageUrl"
-                          :src="commentaire.utilisateur.imageUrl"
-                          class="profilImg"
-                        />
-                        <span class="card-title"
-                          >{{ commentaire.utilisateur.nom }}
-                          {{ commentaire.utilisateur.prenom }}</span
-                        >
-                      </div>
-                      <div class="white commentaireMargin com">
-                        <p>
-                          {{ commentaire.id }}
-                        </p>
-                        <p>
-                          {{ commentaire.message }}
-                        </p>
-                        <img
-                          v-if="!isHidden && commentaire.imageUrl !== ''"
-                          id="imageUrl"
-                          :src="commentaire.imageUrl"
-                          class="publicationImg"
-                        />
-                      </div>
-                      <div
-                        class="commentaireWidthButton publicationWidthButton"
-                      >
-                        <div>
-                          <div>
-                            <button
-                              @click.prevent="
-                                deleteCommentaire(commentaires.id)
-                              "
-                              class="button deleteAccount"
-                            >
-                              Supprimer mon commentaire
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -292,9 +161,6 @@
 import FooterSection from "@/components/Footer.vue";
 import { mapState } from "vuex";
 const axios = require("axios");
-// const instance = axios.create({
-//   baseURL: "http://localhost:3000/api/auth/",
-// });
 const instancePost = axios.create({
   baseURL: "http://localhost:3000/api/",
 });
@@ -310,13 +176,8 @@ export default {
       message: "",
       imageUrl: "",
       imagePreview: "",
-      imagePreviewCom: "",
       isHidden: false,
-      isHiddenCom: false,
-      isHiddenNewCom: false,
       publications: [],
-      // commentaireVisibility: [],
-      commentaireMessage: "",
     };
   },
   async created() {
@@ -331,7 +192,7 @@ export default {
       })
       .then((response) => {
         this.publications = response.data;
-        console.log(this.publications);
+        // console.log(this.publications);
       })
       .catch(function (error) {
         alert(error);
@@ -339,8 +200,8 @@ export default {
       });
   },
   mounted() {
-    console.log(this.$store.state);
-    console.log(this.$store.state.user);
+    // console.log(this.$store.state);
+    // console.log(this.$store.state.user);
     if (this.$store.state.user.userId == -1) {
       this.$router.push("/");
       return;
@@ -354,15 +215,6 @@ export default {
     ...mapState(["status"]),
   },
   methods: {
-    // commentaireVisibilityArray: (id, array) => {
-    //   if (array.includes(id)) {
-    //     array.pop(id);
-    //   } else {
-    //     array.push(id);
-    //   }
-    //   // console.log(typeof id);
-    //   return array;
-    // },
     logout() {
       this.$store.commit("logout");
       this.$router.push("/");
@@ -371,16 +223,16 @@ export default {
       let user = localStorage.getItem("user");
       let userLocal = JSON.parse(user);
       if (userLocal.role === "ADMIN") {
-        console.log(userLocal.role);
+        // console.log(userLocal.role);
         return true;
       } else {
-        console.log(userLocal.role);
+        // console.log(userLocal.role);
         return false;
       }
     },
     // aperçu dynamique
     previewImage(event) {
-      console.log(event.target.files);
+      // console.log(event.target.files);
       var files = event.target.files || event.dataTransfer.files;
       if (!files.length) return;
       this.createImage(files[0]);
@@ -423,7 +275,7 @@ export default {
       let confirmDeletePublication = confirm(
         "Attention ! Votre message ainsi que les commentaires associés seront définitivement supprimés !"
       );
-      console.log(id);
+      // console.log(id);
       if (confirmDeletePublication == true) {
         let user = localStorage.getItem("user");
         let userLocal = JSON.parse(user);
@@ -443,66 +295,16 @@ export default {
         return;
       }
     },
-    // async createCommentaire(id) {
-    //   let user = localStorage.getItem("user");
-    //   let userLocal = JSON.parse(user);
-    //   this.image = document.getElementById(
-    //     "newImagePreviewCommentaire"
-    //   ).files[0];
-    //   const formData = new FormData();
-    //   formData.append("userId", userLocal.userId);
-    //   formData.append("image", this.image);
-    //   formData.append("message", this.commentaireMessage);
-    //   formData.append("utilisateur_id", userLocal.userId);
-    //   formData.append("publication_id", id);
-    //   console.log(id);
-    //   console.log(this.image);
-    //   await instancePost
-    //     .post("/commentaire/", formData, {
-    //       headers: {
-    //         Authorization: "Bearer " + userLocal.token,
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     })
-    //     .then((response) => {
-    //       location.reload();
-    //       console.log(response);
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-    // },
-    // async deleteCommentaire(id) {
-    //   let confirmDeleteCommentaire = confirm(
-    //     "Attention ! Votre commentaire sera définitivement supprimé !"
-    //   );
-    //   // console.log(id);
-    //   if (confirmDeleteCommentaire == true) {
-    //     let user = localStorage.getItem("user");
-    //     let userLocal = JSON.parse(user);
-    //     await instancePost
-    //       .delete(`/commentaire/${id}`, {
-    //         headers: {
-    //           Authorization: "Bearer " + userLocal.token,
-    //         },
-    //       })
-    //       .then(() => {
-    //         location.reload();
-    //       });
-    //   } else {
-    //     return;
-    //   }
-    // },
   },
 };
 </script>
 
 
 
-Afficher que pour element concerné input et commentaire et non tous en même temps
-input selection d'image qui doit s'afficher que dans l'input concerné pour les commentaire (à vérifier)
-pattern contrôle modification info profil
-mise en place des droits ADMIN
+pattern contrôle modification info zone texte, titre, inscription et login
+accés a tous les profil et suppression possible pour l'admin
+mise en place des droits ADMIN (suppression commentaire)
+acceuil probléme de marge à contrôler
 
 
 compte administrateur =>

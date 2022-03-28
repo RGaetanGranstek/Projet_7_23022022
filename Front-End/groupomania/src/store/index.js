@@ -69,30 +69,15 @@ export default createStore({
     userProfil: ({ commit }) => {
       let user = localStorage.getItem('user')
       let userLocal = JSON.parse(user)
-      console.log(userLocal.userId)
+      // console.log(userLocal.userId)
       console.log(userLocal.token)
-      // axios.get('http://localhost:3000/api/auth/profil/' + localStorage.getItem("user.userId"))
-      // axios.get('http://localhost:3000/api/auth/profil/35')
       instance.get('/profil/' + userLocal.userId, { headers: { "Authorization": "Bearer " + userLocal.token } })
-        // .then((response) => {
-        //   console.log(userLocal.userId)
-        //   console.log(localStorage)
-        //   console.log(response);
-        //   console.log(response.data);
-        // })
-        // .catch(function (error) {
-        //   if (error.response) {
-        //     console.log(error.response.data);
-        //     console.log(error.response.status);
-        //     console.log(error.response.headers);
-        //   }
-        // });
         .then((response) => {
           commit('userInfos', response.data);
-          console.log(userLocal.userId)
-          console.log(localStorage)
-          console.log(response);
-          console.log(response.data);
+          // console.log(userLocal.userId)
+          // console.log(localStorage)
+          // console.log(response);
+          // console.log(response.data);
         })
         .catch(function () {
         });
@@ -114,12 +99,12 @@ export default createStore({
     },
     signup: ({ commit }, userInfos) => {
       commit('setStatus', '');
-      console.log(userInfos);
+      // console.log(userInfos);
       return new Promise((resolve, reject) => {
         instance.post('/signup', userInfos)
           .then(function (response) {
             commit('setStatus', 'created');
-            console.log(response);
+            // console.log(response);
             resolve(response);
           })
           .catch(function (error) {
@@ -135,7 +120,7 @@ export default createStore({
         instance.delete('/delete/' + userLocal.userId, { headers: { "Authorization": "Bearer " + userLocal.token } })
           .then(function (response) {
             commit('setStatus', 'Account_deleted');
-            console.log(response);
+            // console.log(response);
             resolve(response);
           })
           .catch(function (error) {

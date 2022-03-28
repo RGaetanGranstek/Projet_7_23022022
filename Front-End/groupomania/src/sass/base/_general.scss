@@ -59,4 +59,9 @@
       color: $color-secondary;
     }
   }
+  h1 {
+    @include breakpoint(mobileonly) {
+      width: 70%;
+    }
+  }
 }

@@ -5,6 +5,7 @@ import SignupView from '../views/SignupView.vue'
 import LoginView from '../views/LoginView.vue'
 import ProfilView from '../views/ProfilView.vue'
 import wallView from '../views/wallView.vue'
+import publicationView from '../views/publicationView.vue'
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     path: '/publication',
     name: 'mur de l entreprise',
     component: wallView
+  },
+  {
+    path: '/publication/:id',
+    name: 'publication',
+    component: publicationView
   }
 ]
 
