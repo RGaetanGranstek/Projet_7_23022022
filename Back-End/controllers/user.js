@@ -74,7 +74,7 @@ exports.signup = (req, res, next) => {
       User.create(user).then(() =>
         res.status(201).json({ message: "Utilisateur créé !" })
       )
-      // .catch(() => res.status(503).json({ message: "Utilisateur existant !" }));
+        .catch(() => res.status(503).json({ message: "Utilisateur existant !" }));
     })
     .catch((error) => res.status(502).json({ error }));
 };
@@ -149,7 +149,8 @@ exports.deleteUtilisateur = (req, res, next) => {
   const _id = req.params.id;
   User.findByPk(_id)
     .then((utilisateur) => {
-      if (utilisateur.imageUrl === null) {
+      if (utilisateur.imageUrl === `${req.protocol}://${req.get("host")}/images/${process.env.imageUrlDefault
+        }`) {
         User.destroy({
           where: { id: _id },
         })

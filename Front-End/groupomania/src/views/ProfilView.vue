@@ -58,6 +58,49 @@
         >
       </div>
     </div>
+    <div v-if="admin(true)" class="display">
+      <div></div>
+      <div
+        v-for="profil in profils.filter((profil) => profil.id != user.id)"
+        :key="profil.id"
+        class="card card-container"
+      >
+        <div>
+          <img alt="image" :src="profil.imageUrl" class="profilImg" />
+        </div>
+        <div>
+          <h1 class="titleProfil">Profil de {{ profil.pseudo }}</h1>
+        </div>
+        <div>
+          <p id="prenom">{{ profil.prenom }}</p>
+        </div>
+        <div>
+          <p id="nom">{{ profil.nom }}</p>
+        </div>
+        <div>
+          <p id="email">{{ profil.email }}</p>
+        </div>
+        <div class="form-row" v-if="'create' && status == 'error_create'">
+          Quelque chose cloche
+        </div>
+        <div class="buttonProfil adminProfilDeleteAccount">
+          <div>
+            <button
+              @click="confirmDeleteAccount(profil.id)"
+              class="button deleteAccount"
+            >
+              Supprimer le compte
+            </button>
+          </div>
+        </div>
+        <div class="form-row" v-if="status == 'Account_updated'">
+          Les informations de compte ont été mises à jour.
+        </div>
+        <div class="form-row" v-if="status == 'error_Account_updated'">
+          Quelque chose cloche
+        </div>
+      </div>
+    </div>
   </div>
   <FooterSection />
 </template>
@@ -83,7 +126,28 @@ export default {
       email: "",
       image: "",
       imageUrl: "",
+      profils: [],
     };
+  },
+
+  async created() {
+    if (this.admin(true)) {
+      let user = localStorage.getItem("user");
+      let userLocal = JSON.parse(user);
+      await instance
+        .get("/profil/", {
+          headers: { Authorization: "Bearer " + userLocal.token },
+          "Content-Type": "application/json",
+        })
+        .then((response) => {
+          this.profils = response.data;
+          console.log(this.profils);
+        })
+        .catch(function (error) {
+          alert(error);
+          console.log(error);
+        });
+    }
   },
   mounted() {
     // console.log(this.$store.state);
@@ -109,37 +173,53 @@ export default {
       let user = localStorage.getItem("user");
       let userLocal = JSON.parse(user);
       if (userLocal.role === "ADMIN") {
-        // console.log(userLocal.role);
         return true;
       } else {
         // console.log(userLocal.role);
         return false;
       }
     },
-    deleteAccount() {
+    deleteAccount(id) {
       const self = this;
-      this.$store.dispatch("deleteAccount").then(
-        function () {
-          self.$store.commit("logout");
-          self.$router.push("/");
-        },
-        function (error) {
-          console.log(error);
-        }
-      );
+      if (self.admin(true)) {
+        let user = localStorage.getItem("user");
+        let userLocal = JSON.parse(user);
+        instance
+          .delete("/delete/" + id, {
+            headers: { Authorization: "Bearer " + userLocal.token },
+          })
+          .then(function (response) {
+            console.log(response);
+            location.reload();
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      } else {
+        const self = this;
+        this.$store.dispatch("deleteAccount").then(
+          function () {
+            self.$store.commit("logout");
+            self.$router.push("/");
+          },
+          function (error) {
+            console.log(error);
+          }
+        );
+      }
     },
-    confirmDeleteAccount() {
+    confirmDeleteAccount(id) {
       if (
         window.confirm(
           "Attention ! Cette opération est irreversible. Tous vos messages ainsi que les commentaires associés seront définitivement supprimés !"
         )
       ) {
-        this.deleteAccount();
+        this.deleteAccount(id);
       }
     },
-    confirmUpdateProfil() {
+    confirmUpdateProfil(id) {
       if (window.confirm("Souhaitez-vous validé les modifications ?")) {
-        this.updateAccount();
+        this.updateAccount(id);
       }
     },
     updateAccount() {

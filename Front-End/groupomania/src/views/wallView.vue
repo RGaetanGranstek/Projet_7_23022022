@@ -21,6 +21,7 @@
             placeholder="Titre de votre publication !"
           />
           <textarea
+            style="resize: none"
             v-model="message"
             class="newPublicationText"
             name="message"
@@ -73,13 +74,7 @@
             v-for="publication in publications.slice().reverse()"
           >
             <!-- On récupére les utilisateurs correspondant aux publications -->
-            <div
-              v-for="utilisateur in publications.filter((utilisateur) => {
-                return utilisateur.id == publication.utilisateur_id;
-              })"
-              :key="utilisateur.id"
-              class="allPublication card-wall flex-item-large display"
-            >
+            <div class="allPublication card-wall flex-item-large display">
               <div class="profilPublication">
                 <img
                   alt="image"
@@ -99,6 +94,7 @@
                   placeholder="Titre de votre publication !"
                 />
                 <textarea
+                  style="resize: none"
                   v-if="isHidden"
                   v-model="message"
                   class="newPublicationText"
@@ -127,7 +123,9 @@
                 <div class="form-column">
                   <div>
                     <button
-                      v-if="user.id == publication.utilisateur_id"
+                      v-if="
+                        admin(true) || user.id == publication.utilisateur_id
+                      "
                       @click.prevent="deletePublication(publication.id)"
                       class="button deleteAccount"
                     >
@@ -277,20 +275,25 @@ export default {
       );
       // console.log(id);
       if (confirmDeletePublication == true) {
-        let user = localStorage.getItem("user");
-        let userLocal = JSON.parse(user);
-        await instancePost
-          .delete(`/publication/${id}`, {
-            headers: {
-              Authorization: "Bearer " + userLocal.token,
-            },
-          })
-          .then(() => {
-            location.reload();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        const self = this;
+        if (self.admin(true) || this.user.id) {
+          let user = localStorage.getItem("user");
+          let userLocal = JSON.parse(user);
+          await instancePost
+            .delete(`/publication/${id}`, {
+              headers: {
+                Authorization: "Bearer " + userLocal.token,
+              },
+            })
+            .then(() => {
+              location.reload();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        } else {
+          return;
+        }
       } else {
         return;
       }
@@ -301,11 +304,8 @@ export default {
 
 
 
-pattern contrôle modification info zone texte, titre, inscription et login
-accés a tous les profil et suppression possible pour l'admin
-mise en place des droits ADMIN (suppression commentaire)
-acceuil probléme de marge à contrôler
-
+pattern (ameliorer l'affichage)
+reverse affichage qui déconne à cause du reverse globale de publications
 
 compte administrateur =>
 

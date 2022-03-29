@@ -61,7 +61,7 @@
   }
   h1 {
     @include breakpoint(mobileonly) {
-      width: 70%;
+      margin: 1% 10%;
     }
   }
 }

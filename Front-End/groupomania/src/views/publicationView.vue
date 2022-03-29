@@ -47,6 +47,7 @@
                   placeholder="Titre de votre publication !"
                 />
                 <textarea
+                  style="resize: none"
                   v-if="isHidden"
                   v-model="message"
                   class="newPublicationText"
@@ -75,7 +76,9 @@
                 <div class="form-column">
                   <div>
                     <button
-                      v-if="user.id == publication.utilisateur_id"
+                      v-if="
+                        admin(true) || user.id == publication.utilisateur_id
+                      "
                       @click.prevent="deletePublication(publication.id)"
                       class="button deleteAccount"
                     >
@@ -126,7 +129,10 @@
                       <div>
                         <div>
                           <button
-                            v-if="user.id == commentaire.utilisateur_id"
+                            v-if="
+                              admin(true) ||
+                              user.id == commentaire.utilisateur_id
+                            "
                             @click.prevent="deleteCommentaire(commentaire.id)"
                             class="button deleteAccount"
                           >
@@ -168,6 +174,7 @@
                         class="flex-item-large"
                       >
                         <textarea
+                          style="resize: none"
                           v-model="commentaireMessage"
                           class="newPublicationText"
                           name="message"
@@ -281,6 +288,17 @@ export default {
       this.$store.commit("logout");
       this.$router.push("/");
     },
+    admin() {
+      let user = localStorage.getItem("user");
+      let userLocal = JSON.parse(user);
+      if (userLocal.role === "ADMIN") {
+        // console.log(userLocal.role);
+        return true;
+      } else {
+        // console.log(userLocal.role);
+        return false;
+      }
+    },
     // aperçu dynamique
     previewImage(event) {
       //   console.log(event.target.files);
@@ -302,20 +320,25 @@ export default {
       );
       //   console.log(id);
       if (confirmDeletePublication == true) {
-        let user = localStorage.getItem("user");
-        let userLocal = JSON.parse(user);
-        await instancePost
-          .delete(`/publication/${id}`, {
-            headers: {
-              Authorization: "Bearer " + userLocal.token,
-            },
-          })
-          .then(() => {
-            location.reload();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        const self = this;
+        if (self.admin(true) || this.user.id) {
+          let user = localStorage.getItem("user");
+          let userLocal = JSON.parse(user);
+          await instancePost
+            .delete(`/publication/${id}`, {
+              headers: {
+                Authorization: "Bearer " + userLocal.token,
+              },
+            })
+            .then(() => {
+              location.reload();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        } else {
+          return;
+        }
       } else {
         return;
       }
@@ -355,17 +378,22 @@ export default {
       );
       // console.log(id);
       if (confirmDeleteCommentaire == true) {
-        let user = localStorage.getItem("user");
-        let userLocal = JSON.parse(user);
-        await instancePost
-          .delete(`/commentaire/${id}`, {
-            headers: {
-              Authorization: "Bearer " + userLocal.token,
-            },
-          })
-          .then(() => {
-            location.reload();
-          });
+        const self = this;
+        if (self.admin(true) || this.user.id) {
+          let user = localStorage.getItem("user");
+          let userLocal = JSON.parse(user);
+          await instancePost
+            .delete(`/commentaire/${id}`, {
+              headers: {
+                Authorization: "Bearer " + userLocal.token,
+              },
+            })
+            .then(() => {
+              location.reload();
+            });
+        } else {
+          return;
+        }
       } else {
         return;
       }
