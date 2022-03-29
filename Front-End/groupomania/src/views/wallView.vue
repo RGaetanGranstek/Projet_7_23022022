@@ -298,13 +298,3 @@ export default {
   },
 };
 </script>
-
-
-compte administrateur =>
-
-"pseudo": "Modérateur(trice)",
-"nom": "Groupomania",
-"prenom": "Communication",
-"email": "Contact@Groupomania.fr",
-"password": "Groupomania!00",
-"role": "ADMIN"
