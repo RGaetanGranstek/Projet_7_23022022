@@ -122,6 +122,8 @@ export default {
         );
     },
     signup() {
+      this.errorCreate = "";
+      this.errorPasswordCreate = "";
       // Récupération des infos pour l'envoie en POST
       // Validation que le formulaire est correctement rempli
       if (

@@ -69,10 +69,7 @@
       <div class="newPublication flex-item-large display displayWall">
         <div class="allUtilisateursBackground">
           <!-- On récupére les publications des plus récentes aux plus anciennes -->
-          <div
-            :key="publication.id"
-            v-for="publication in publications.slice().reverse()"
-          >
+          <div :key="publication.id" v-for="publication in publications">
             <!-- On récupére les utilisateurs correspondant aux publications -->
             <div class="allPublication card-wall flex-item-large display">
               <div class="profilPublication">
@@ -190,7 +187,7 @@ export default {
       })
       .then((response) => {
         this.publications = response.data;
-        // console.log(this.publications);
+        console.log(this.publications);
       })
       .catch(function (error) {
         alert(error);
@@ -302,10 +299,6 @@ export default {
 };
 </script>
 
-
-
-pattern (ameliorer l'affichage)
-reverse affichage qui déconne à cause du reverse globale de publications
 
 compte administrateur =>
 

@@ -108,6 +108,9 @@ exports.getOnePublication = (req, res, next) => {
 exports.getAllPublication = (req, res, next) => {
   // findByPk pour trouver tous les objets
   Publication.findAll({
+    order: [
+      ['id', 'DESC'],
+    ],
     include: [
       { model: User, required: true, attributes: ['nom', 'prenom', 'pseudo', 'imageUrl'] },
       { model: Commentaire, required: false, include: [{ model: User, attributes: ['nom', 'prenom', 'pseudo', 'imageUrl'] }] }]
