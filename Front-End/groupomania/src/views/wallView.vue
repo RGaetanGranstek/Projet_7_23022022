@@ -187,7 +187,7 @@ export default {
       })
       .then((response) => {
         this.publications = response.data;
-        console.log(this.publications);
+        // console.log(this.publications);
       })
       .catch(function (error) {
         alert(error);
