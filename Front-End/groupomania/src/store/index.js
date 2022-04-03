@@ -70,7 +70,7 @@ export default createStore({
       let user = localStorage.getItem('user')
       let userLocal = JSON.parse(user)
       // console.log(userLocal.userId)
-      console.log(userLocal.token)
+      // console.log(userLocal.token)
       instance.get('/profil/' + userLocal.userId, { headers: { "Authorization": "Bearer " + userLocal.token } })
         .then((response) => {
           commit('userInfos', response.data);
