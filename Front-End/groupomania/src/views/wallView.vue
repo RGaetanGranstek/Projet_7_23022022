@@ -100,9 +100,6 @@
                   placeholder="Rédiger votre message !"
                   aria-label="Rédiger un nouveau message"
                 />
-                <!-- <p v-if="!isHidden">
-                  {{ publication.id }}
-                </p> -->
                 <p v-if="!isHidden">
                   {{ publication.titre }}
                 </p>
@@ -187,7 +184,6 @@ export default {
       })
       .then((response) => {
         this.publications = response.data;
-        // console.log(this.publications);
       })
       .catch(function (error) {
         alert(error);
@@ -195,8 +191,6 @@ export default {
       });
   },
   mounted() {
-    // console.log(this.$store.state);
-    // console.log(this.$store.state.user);
     if (this.$store.state.user.userId == -1) {
       this.$router.push("/");
       return;
@@ -218,16 +212,13 @@ export default {
       let user = localStorage.getItem("user");
       let userLocal = JSON.parse(user);
       if (userLocal.role === "ADMIN") {
-        // console.log(userLocal.role);
         return true;
       } else {
-        // console.log(userLocal.role);
         return false;
       }
     },
     // aperçu dynamique
     previewImage(event) {
-      // console.log(event.target.files);
       var files = event.target.files || event.dataTransfer.files;
       if (!files.length) return;
       this.createImage(files[0]);
@@ -250,7 +241,6 @@ export default {
       formData.append("titre", this.titre);
       formData.append("message", this.message);
       formData.append("utilisateur_id", userLocal.userId);
-      // console.log(this.image);
       await instancePost
         .post("/publication/", formData, {
           headers: {
@@ -270,7 +260,6 @@ export default {
       let confirmDeletePublication = confirm(
         "Attention ! Votre message ainsi que les commentaires associés seront définitivement supprimés !"
       );
-      // console.log(id);
       if (confirmDeletePublication == true) {
         const self = this;
         if (self.admin(true) || this.user.id) {

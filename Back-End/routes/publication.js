@@ -11,7 +11,6 @@ const multer = require("../middleware/multer-config");
 // logique de création d'objet + protection d'une route (auth)
 // multer aprés auth pour assurer l'authentification avant toute modification de l'image
 router.post("/", auth, multer, publicationControllers.createPublication);
-// router.post("/:id/like", auth, publicationControllers.likeDislikePublication);
 
 // modifier un objet existant dans la base de donnée
 router.put("/:id", auth, multer, publicationControllers.modifyPublication);

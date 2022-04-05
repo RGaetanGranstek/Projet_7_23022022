@@ -150,8 +150,6 @@ export default {
     }
   },
   mounted() {
-    // console.log(this.$store.state);
-    // console.log(this.$store.state.user);
     if (this.$store.state.user.userId == -1) {
       this.$router.push("/");
       return;
@@ -175,7 +173,6 @@ export default {
       if (userLocal.role === "ADMIN") {
         return true;
       } else {
-        // console.log(userLocal.role);
         return false;
       }
     },
@@ -239,15 +236,11 @@ export default {
         .then((response) => {
           this.imageUrl = response.data.imageUrl;
           localStorage.setItem("image", response.data);
-          // console.log(response.data);
-          // console.log(localStorage);
           location.reload();
-          // console.log(response);
         });
     },
     // aperçu dynamique
     previewFiles(event) {
-      // console.log(event.target.files);
       var files = event.target.files || event.dataTransfer.files;
       if (!files.length) return;
       this.createImage(files[0]);

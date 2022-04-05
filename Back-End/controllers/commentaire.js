@@ -1,11 +1,8 @@
+// importation du model
 let db = require("../models")
 const Publication = db.Publication
 const Commentaire = db.Commentaire
 const User = db.User
-// importation du model
-// const Commentaire = require("../models/commentaire");
-// sequelize
-// const sequelize = require("../config/sequelize")
 // importation de fs de node pour file system pour avoir accés aux différentes opérations du système de fichier
 const fs = require("fs");
 
@@ -15,8 +12,6 @@ const fs = require("fs");
 exports.createCommentaire = (req, res, next) => {
   let newImageUrl = "";
   if (req.file) { newImageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}` };
-  // console.log(req);
-  // console.log(req.file);
   const commentaire = {
     utilisateur_id: req.body.utilisateur_id,
     publication_id: req.body.publication_id,
@@ -33,8 +28,6 @@ exports.createCommentaire = (req, res, next) => {
 // modifier un objet existant dans la base de donnée
 exports.modifyCommentaire = (req, res, next) => {
   const _id = req.params.id;
-  // console.log(_id);
-  // console.log(req);
   console.log(req.body.userId);
   // permet de savoir si image existante ou si nouvelle
   const commentaireImage = req.file
@@ -68,8 +61,6 @@ exports.deleteCommentaire = (req, res, next) => {
         // ont récupère le nom du fichier à supprimer
         const filename = commentaire.imageUrl.split("/images/")[1];
         // ont supprime l'objet
-        // console.log(_id);
-        // console.log(filename);
         fs.unlink(`images/${filename}`, () => {
           // ont renvoi une réponse si fonctionne ou non
           Commentaire.destroy({
@@ -81,7 +72,7 @@ exports.deleteCommentaire = (req, res, next) => {
         })
       }
     })
-  // .catch((error) => res.status(500).json({ error }));
+    .catch((error) => res.status(500).json({ error }));
 };
 
 // :id <= parti de la route dynamique pour une recherche à l'unité dans la base de donnée
@@ -111,98 +102,3 @@ exports.getAllCommentaire = (req, res, next) => {
     .then((commentaires) => res.status(200).json(commentaires))
     .catch((error) => res.status(500).json({ error }));
 };
-
-//
-//
-//
-//Incrémentation des likes et dislikes utilisateur pour les commentaires
-// exports.likeDislikeCommentaire = (req, res, next) => {
-//   if (req.body.like === undefined || req.body.utilisateur_id === undefined) {
-//     return res.status(401).json({ message: "Bad request !" });
-//   }
-//   const _id = req.params.id;
-//   const like = req.body.like;
-//   const utilisateur_id = req.body.utilisateur_id;
-//   console.log(req.body);
-//   console.log(like);
-
-//   switch (like) {
-//     // Décrémentation d'un like et d'un utilisateur
-//     case 0:
-//       // findByPk pour trouver qu'un seul objet
-//       Commentaire.findByPk(_id)
-//         .then((commentaire) => {
-//           if (commentaire.usersLiked.includes(utilisateur_id)) {
-//             Commentaire.update(
-//               req.body,
-//               {
-//                 where: { id: _id },
-//               },
-//               // Décrémentation d'un like et d'un utilisateur
-//               { $inc: { likes: -1 }, $pull: { usersLiked: utilisateur_id } }
-//             )
-//               .then(() => {
-//                 res.status(201).json({
-//                   message: `Le vote pour la commentaire: ${commentaire.titre} n'est plus pris en compte`,
-//                 });
-//               })
-//               .catch((error) => res.status(402).json({ error }));
-//           }
-//           if (commentaire.usersDisliked.includes(utilisateur_id)) {
-//             Commentaire.update(
-//               req.body,
-//               {
-//                 where: { id: _id },
-//               },
-//               // Décrémentation d'un like et d'un utilisateur
-//               {
-//                 $inc: { dislikes: -1 },
-//                 $pull: { usersDisliked: utilisateur_id },
-//               }
-//             )
-//               .then(() => {
-//                 res.status(201).json({
-//                   message: `Le vote pour la commentaire: ${commentaire.titre} n'est plus pris en compte`,
-//                 });
-//               })
-//               .catch((error) => res.status(403).json({ error }));
-//           }
-//         })
-//         .catch((error) => {
-//           return res.status(500).json({ error });
-//         });
-//       break;
-//     // L'utilisateur aime la commentaire
-//     case 1:
-//       Commentaire.update(
-//         req.body,
-//         {
-//           where: { id: _id },
-//         },
-//         // Incrémentation d'un like et d'un utilisateur
-//         { $inc: { likes: 1 }, $push: { usersLiked: utilisateur_id } }
-//       )
-//         .then(() =>
-//           res.status(201).json({ message: `Vous aimez cette commentaire !` })
-//         )
-//         .catch((error) => res.status(500).json({ error }));
-//       break;
-//     // L'utilisateur n'aime pas la commentaire
-//     case -1:
-//       Commentaire.update(
-//         req.body,
-//         {
-//           where: { id: _id },
-//         },
-//         // Incrémentation d'un like et d'un utilisateur
-//         { $inc: { dislikes: 1 }, $push: { usersDisliked: utilisateur_id } }
-//       )
-//         .then(() =>
-//           res
-//             .status(201)
-//             .json({ message: `Vous n'aimez pas cette commentaire !` })
-//         )
-//         .catch((error) => res.status(500).json({ error }));
-//       break;
-//   }
-// };

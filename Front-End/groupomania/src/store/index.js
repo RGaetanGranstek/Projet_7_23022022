@@ -69,15 +69,9 @@ export default createStore({
     userProfil: ({ commit }) => {
       let user = localStorage.getItem('user')
       let userLocal = JSON.parse(user)
-      // console.log(userLocal.userId)
-      // console.log(userLocal.token)
       instance.get('/profil/' + userLocal.userId, { headers: { "Authorization": "Bearer " + userLocal.token } })
         .then((response) => {
           commit('userInfos', response.data);
-          // console.log(userLocal.userId)
-          // console.log(localStorage)
-          // console.log(response);
-          // console.log(response.data);
         })
         .catch(function () {
         });
@@ -99,12 +93,10 @@ export default createStore({
     },
     signup: ({ commit }, userInfos) => {
       commit('setStatus', '');
-      // console.log(userInfos);
       return new Promise((resolve, reject) => {
         instance.post('/signup', userInfos)
           .then(function (response) {
             commit('setStatus', 'created');
-            // console.log(response);
             resolve(response);
           })
           .catch(function (error) {
@@ -120,12 +112,10 @@ export default createStore({
         instance.delete('/delete/' + userLocal.userId, { headers: { "Authorization": "Bearer " + userLocal.token } })
           .then(function (response) {
             commit('setStatus', 'Account_deleted');
-            // console.log(response);
             resolve(response);
           })
           .catch(function (error) {
             commit('setStatus', 'error_Account_deleted');
-            console.log(error);
             reject(error);
           });
       }

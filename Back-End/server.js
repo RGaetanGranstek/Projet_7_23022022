@@ -1,26 +1,3 @@
-// const http = require("http");
-// const app = require("./app");
-
-// //ont dit à l'application sur quel port elle doit fonctionner
-// app.set("port", process.env.PORT || 3000);
-
-// //  Cette fonction reçoit les objets request et response en tant qu'arguments
-// const server = http.createServer(
-//   // (req, res) => {
-//   // // la méthode end de la réponse renvoye une réponse de type string à l'appelant
-//   // res.end("Cool, le serveur fonctionne !");}
-//   app
-// );
-
-// // process.env.PORT => variable environnement (Là ou tourne le serveur si il envoi un port à utiliser sinon par défaut port 3000)
-// server.listen(process.env.PORT || 3000);
-
-// *********
-// *********
-// *********
-// *********
-// *********
-
 const http = require("http");
 const app = require("./app");
 

@@ -2,14 +2,10 @@ let db = require("../models")
 const Publication = db.Publication
 const Commentaire = db.Commentaire
 const User = db.User
-// model user
-// const User = require("../models/user");
 // package cryptage des mots de passe (hashage)
 const bcrypt = require("bcrypt");
 // création de token et permet aussi de les vérifier
 const jwt = require("jsonwebtoken");
-// maskdata est un module Node.js pour masquer différents types de données. Avec l’aide de maskdata, vous pouvez masquer l’e-mail, le numéro de téléphone, le numéro de carte, les champs JSON, le mot de passe, etc.
-const MaskData = require("maskdata");
 // mise en place d'un validateur de mot de passe + complexe
 const passwordValidator = require("password-validator");
 // importation de fs de node pour file system pour avoir accés aux différentes opérations du système de fichier
@@ -37,14 +33,6 @@ schema
   .not()
   .oneOf(["Passw0rd", "Password123"]); // Blacklist certain mdp défini
 
-// utilisation des options de maskdata pour cacher l'email
-const emailMask2Options = {
-  maskWith: "*",
-  unmaskedStartCharactersBeforeAt: 3,
-  unmaskedEndCharactersAfterAt: 2,
-  maskAtTheRate: false,
-};
-
 // middleware signup pour l'enregistrement des new utilisateur en cryptant le mot de passe
 exports.signup = (req, res, next) => {
   if (!schema.validate(req.body.password)) {
@@ -65,7 +53,6 @@ exports.signup = (req, res, next) => {
         prenom: req.body.prenom,
         pseudo: req.body.pseudo,
         email: req.body.email,
-        // email: MaskData.maskEmail2(req.body.email, emailMask2Options),
         password: hash,
         imageUrl: `${req.protocol}://${req.get("host")}/images/${process.env.imageUrlDefault
           }`,
@@ -85,7 +72,6 @@ exports.login = (req, res, next) => {
   User.findOne({
     where: {
       email: req.body.email,
-      // email: MaskData.maskEmail2(req.body.email, emailMask2Options),
     },
   })
     .then((user) => {
@@ -123,8 +109,6 @@ exports.login = (req, res, next) => {
 // modifier un objet existant dans la base de donnée
 exports.updateUtilisateur = (req, res, next) => {
   const _id = req.params.id;
-  // console.log(_id);
-  // console.log(req);
   console.log(req.body.userId);
   // permet de savoir si image existante ou si nouvelle
   const profilImage = req.file
@@ -179,7 +163,6 @@ exports.deleteUtilisateur = (req, res, next) => {
 // recherche d'information utilisateur
 exports.userProfil = (req, res, next) => {
   const _id = req.params.id;
-  // console.log(_id);
   User.findOne({
     where: {
       //Cible l'id de l'objet à afficher
@@ -195,7 +178,6 @@ exports.userProfil = (req, res, next) => {
 
 // recherche d'information all utilisateur
 exports.userProfilAll = (req, res, next) => {
-  // console.log(_id);
   User.findAll({
     include: [
       { model: Publication, required: false },

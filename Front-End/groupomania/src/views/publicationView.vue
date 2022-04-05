@@ -22,7 +22,6 @@
       <div class="newPublication flex-item-large">
         <div class="allUtilisateursBackground">
           <div v-for="publication in publications" :key="publication.id">
-            <!-- {{ publication.id }} -_-_- {{ $route.params.id }} -->
             <!-- On récupére les utilisateurs correspondant aux publications -->
             <div
               v-if="publication.id == $route.params.id"
@@ -56,9 +55,6 @@
                   placeholder="Rédiger votre message !"
                   aria-label="Rédiger un nouveau message"
                 />
-                <!-- <p v-if="!isHidden">
-                  {{ publication.id }}
-                </p> -->
                 <p v-if="!isHidden">
                   {{ publication.titre }}
                 </p>
@@ -111,9 +107,6 @@
                         >
                       </div>
                       <div class="white commentaireMargin com">
-                        <!-- <p>
-                          {{ commentaire.id }}
-                        </p> -->
                         <p>
                           {{ commentaire.message }}
                         </p>
@@ -261,7 +254,6 @@ export default {
       })
       .then((response) => {
         this.publications = response.data;
-        // console.log(this.publications);
       })
       .catch(function (error) {
         alert(error);
@@ -269,8 +261,6 @@ export default {
       });
   },
   mounted() {
-    // console.log(this.$store.state);
-    // console.log(this.$store.state.user);
     if (this.$store.state.user.userId == -1) {
       this.$router.push("/");
       return;
@@ -292,16 +282,13 @@ export default {
       let user = localStorage.getItem("user");
       let userLocal = JSON.parse(user);
       if (userLocal.role === "ADMIN") {
-        // console.log(userLocal.role);
         return true;
       } else {
-        // console.log(userLocal.role);
         return false;
       }
     },
     // aperçu dynamique
     previewImage(event) {
-      //   console.log(event.target.files);
       var files = event.target.files || event.dataTransfer.files;
       if (!files.length) return;
       this.createImage(files[0]);
@@ -318,7 +305,6 @@ export default {
       let confirmDeletePublication = confirm(
         "Attention ! Votre message ainsi que les commentaires associés seront définitivement supprimés !"
       );
-      //   console.log(id);
       if (confirmDeletePublication == true) {
         const self = this;
         if (self.admin(true) || this.user.id) {
@@ -355,8 +341,6 @@ export default {
       formData.append("message", this.commentaireMessage);
       formData.append("utilisateur_id", userLocal.userId);
       formData.append("publication_id", id);
-      //   console.log(id);
-      //   console.log(this.image);
       await instancePost
         .post("/commentaire/", formData, {
           headers: {
@@ -376,7 +360,6 @@ export default {
       let confirmDeleteCommentaire = confirm(
         "Attention ! Votre commentaire sera définitivement supprimé !"
       );
-      // console.log(id);
       if (confirmDeleteCommentaire == true) {
         const self = this;
         if (self.admin(true) || this.user.id) {
